@@ -1,0 +1,137 @@
+.footer {
+  background-color: #060A0F;
+  border-top: 1px solid #1A2330;
+  padding: 60px 0 0;
+  color: #94A3B8;
+  font-size: 14px;
+  /* Removed margin-top — footer follows content directly via flex layout */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 48px;
+  margin-bottom: 52px;
+}
+
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.logoImg {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brandDesc {
+  color: #64748B;
+  line-height: 1.65;
+  font-size: 13.5px;
+  max-width: 340px;
+}
+
+.guarantee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand-primary);
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.colTitle {
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+  font-family: var(--font-mono);
+}
+
+.linkList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.linkList a {
+  color: #64748B;
+  font-size: 13.5px;
+  transition: color var(--transition-fast);
+}
+
+.linkList a:hover {
+  color: var(--brand-primary);
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #64748B;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.contactItem svg {
+  color: var(--brand-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bottomBar {
+  padding: 20px 0;
+  border-top: 1px solid #1A2330;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12.5px;
+  color: #475569;
+}
+
+.adminLink {
+  color: #334155;
+  font-size: 12px;
+  transition: color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.adminLink:hover {
+  color: var(--brand-primary);
+}
+
+@media (max-width: 960px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+  .brandCol {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .brandCol {
+    grid-column: auto;
+  }
+}

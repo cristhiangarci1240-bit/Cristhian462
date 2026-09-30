@@ -1,0 +1,253 @@
+.pageWrapper {
+  background-color: #FFFFFF;
+  padding: 24px 0 80px;
+  min-height: 80vh;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #94A3B8;
+  margin-bottom: 32px;
+}
+
+.breadcrumb a {
+  color: #64748B;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.breadcrumb a:hover {
+  color: #0F172A;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+
+/* Galeria */
+.galleryCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mainImageFrame {
+  width: 100%;
+  height: 420px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.mainImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.thumbnailRow {
+  display: flex;
+  gap: 12px;
+}
+
+.thumbBtn {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.thumbBtn:hover {
+  border-color: #CBD5E1;
+}
+
+.thumbBtnActive {
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 0 0 1px var(--brand-primary);
+}
+
+.thumbImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Detalhes */
+.infoCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.productTitle {
+  font-size: 30px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.stockBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #DCFCE7;
+  color: #15803D;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.stockDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #22C55E;
+}
+
+.metaSubline {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #94A3B8;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.featuresSection {
+  margin-bottom: 32px;
+}
+
+.featuresHeading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 12px;
+}
+
+.featureList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.featureDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #0F172A;
+  flex-shrink: 0;
+}
+
+.whatsappActionBtn {
+  background-color: var(--brand-primary);
+  color: #0B0F14;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  max-width: 440px;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 14px var(--brand-primary-glow);
+}
+
+.whatsappActionBtn:hover {
+  background-color: var(--brand-primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Specs */
+.specsContainer {
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 1px solid #E2E8F0;
+}
+
+.specsHeading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 20px;
+}
+
+.specsTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.specsTable tr {
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.specsTable tr:last-child {
+  border-bottom: none;
+}
+
+.specsKey {
+  width: 35%;
+  padding: 12px 18px;
+  font-weight: 600;
+  color: #475569;
+  background-color: #F8FAFC;
+  font-size: 13.5px;
+  border-right: 1px solid #E2E8F0;
+}
+
+.specsVal {
+  padding: 12px 18px;
+  color: #0F172A;
+  font-size: 14px;
+}
+
+@media (max-width: 860px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}

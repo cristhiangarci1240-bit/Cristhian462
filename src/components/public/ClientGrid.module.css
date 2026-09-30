@@ -1,0 +1,184 @@
+/* ================================================================
+   TECH7 — Corporate Partners / ClientGrid
+   Seamless horizontal marquee, right-direction
+   ================================================================ */
+
+.section {
+  padding: 48px 0 54px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  font-family: var(--font-mono);
+  margin-bottom: 14px;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: clamp(26px, 2.4vw, 36px);
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.025em;
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+
+.titleAccent {
+  color: var(--brand-primary);
+}
+
+.subtitle {
+  font-size: 14.5px;
+  color: #64748B;
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+
+/* ── Marquee ── */
+/* Full-viewport width container */
+.marqueeWrapper {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  /* Fade edges */
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+  cursor: default;
+}
+
+/*
+  Track scrolls RIGHT (positive translateX direction).
+  We start off-screen to the left and move right by 33.33%
+  (one copy of the list). Because list is tripled,
+  the loop is seamless.
+*/
+.marqueeTrack {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: max-content;
+  /* Start shifted left by one full copy's width so we begin in the middle */
+  animation: marqueeRight 30s linear infinite;
+}
+
+@keyframes marqueeRight {
+  0%   { transform: translateX(-33.333%); }
+  100% { transform: translateX(0%);       }
+}
+
+/* Individual logo slot */
+.logoItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 56px;
+  opacity: 0.60;
+  filter: grayscale(100%);
+  transition: opacity 240ms ease, filter 240ms ease;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoItem:hover {
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+/* Logo image */
+.logo {
+  height: 52px;
+  max-width: 140px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Text fallback */
+.logoText {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 17px;
+  color: #334155;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Divider between logos */
+.logoItem + .logoItem {
+  border-left: 1px solid #E2E8F0;
+}
+
+/* ── Static grid (only shown on prefers-reduced-motion) ── */
+.staticGrid {
+  display: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px 48px;
+  padding: 0 24px;
+}
+
+.staticItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.65;
+  filter: grayscale(100%);
+  transition: opacity 200ms ease, filter 200ms ease;
+}
+
+.staticItem:hover {
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+/* ── Reduced motion: hide marquee, show static grid ── */
+@media (prefers-reduced-motion: reduce) {
+  .marqueeWrapper { display: none; }
+  .staticGrid     { display: flex; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .section      { padding: 38px 0 42px; }
+  .header       { margin-bottom: 24px; }
+  .logoItem     { padding: 0 36px; }
+  .logo         { height: 44px; max-width: 120px; }
+}
+
+@media (max-width: 600px) {
+  .section      { padding: 30px 0 34px; }
+  .header       { margin-bottom: 20px; }
+  .logoItem     { padding: 0 24px; }
+  .logo         { height: 38px; max-width: 100px; }
+  .marqueeTrack { animation-duration: 25s; }
+}

@@ -1,0 +1,95 @@
+/* =============================================
+   TECH7 Admin Sidebar — Light Corporate Theme
+   ============================================= */
+
+.sidebar {
+  width: 252px;
+  background-color: #FFFFFF;
+  border-right: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+}
+
+/* ── Logo area ── */
+.logoArea {
+  padding: 20px 20px 18px;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+}
+
+.logoImg {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  /* Invert white-on-dark SVG logo to dark-on-light */
+  filter: brightness(0);
+}
+
+/* ── Navigation ── */
+.nav {
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  color: #64748B;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.navItem:hover {
+  color: #0F172A;
+  background-color: #F1F5F9;
+}
+
+.navItemActive {
+  background-color: var(--brand-primary) !important;
+  color: #0B0F14 !important;
+  font-weight: 700 !important;
+}
+
+.navItemActive svg {
+  color: #0B0F14 !important;
+}
+
+/* ── Footer / public link ── */
+.footer {
+  padding: 12px 10px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.publicLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  color: #94A3B8;
+  font-size: 12.5px;
+  text-decoration: none;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  transition: all var(--transition-fast);
+}
+
+.publicLink:hover {
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  background-color: rgba(0, 230, 118, 0.04);
+}

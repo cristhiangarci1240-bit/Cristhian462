@@ -1,0 +1,73 @@
+.floatingContainer {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tooltip {
+  background-color: var(--brand-surface);
+  color: var(--text-white);
+  border: 1px solid var(--brand-border);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 300ms ease;
+  white-space: nowrap;
+}
+
+.floatingButton {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background-color: #25D366;
+  color: #070A0E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.4);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.floatingButton:hover {
+  transform: scale(1.08) translateY(-2px);
+  background-color: #20BD5A;
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.55);
+}
+
+.pulseDot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #00E676;
+  border: 2px solid #070A0E;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 640px) {
+  .floatingContainer {
+    bottom: 20px;
+    right: 20px;
+  }
+  .tooltip {
+    display: none;
+  }
+}

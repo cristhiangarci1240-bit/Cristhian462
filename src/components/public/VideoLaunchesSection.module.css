@@ -1,0 +1,397 @@
+.section {
+  padding: 88px 0 96px;
+  background: #080B0E;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Subtle background illumination matching TECH7 corporate identity */
+.bgGlow {
+  position: absolute;
+  top: -15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(0, 230, 118, 0.04) 0%, rgba(0, 230, 118, 0.01) 50%, transparent 75%);
+  pointer-events: none;
+  filter: blur(80px);
+}
+
+.headerContainer {
+  margin-bottom: 40px;
+  display: flex;
+  justifyContent: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  font-family: var(--font-mono);
+  margin-bottom: 12px;
+}
+
+.eyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--brand-primary);
+  box-shadow: 0 0 10px var(--brand-primary);
+}
+
+.title {
+  font-size: 34px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+}
+
+.titleHighlight {
+  color: var(--brand-primary);
+}
+
+.subtitle {
+  color: #94A3B8;
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 640px;
+}
+
+/* Navigation controls */
+.navControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms ease;
+  backdrop-filter: blur(8px);
+}
+
+.navBtn:hover:not(:disabled) {
+  border-color: var(--brand-primary);
+  background-color: rgba(0, 230, 118, 0.12);
+  color: var(--brand-primary);
+  transform: translateY(-2px);
+}
+
+.navBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Carousel wrapper & track */
+.carouselWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 0 24px;
+  scrollbar-width: none; /* Firefox */
+}
+
+.track::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Card container — 9:16 portrait ratio */
+.card {
+  flex: 0 0 calc((100% - 60px) / 4); /* ~4 cards on desktop */
+  min-width: 250px;
+  max-width: 320px;
+  aspect-ratio: 9 / 16;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  background-color: #0E1319;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  scroll-snap-align: start;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), border-color 260ms ease, box-shadow 260ms ease;
+  user-select: none;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 230, 118, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 230, 118, 0.08);
+}
+
+.cardActive {
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 230, 118, 0.18) !important;
+}
+
+/* Video element */
+.videoPlayer {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-color: #050709;
+}
+
+/* Poster / Thumbnail image */
+.posterImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms ease, opacity 300ms ease;
+}
+
+.card:hover .posterImage {
+  transform: scale(1.03);
+}
+
+/* Gradient backdrop for legibility */
+.gradientOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(11, 15, 20, 0.65) 0%,
+    rgba(11, 15, 20, 0.1) 40%,
+    rgba(11, 15, 20, 0.4) 65%,
+    rgba(11, 15, 20, 0.95) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Top header in card (Category badge & status) */
+.cardHeader {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justifyContent: space-between;
+  align-items: center;
+  z-index: 3;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(11, 15, 20, 0.75);
+  backdrop-filter: blur(8px);
+  color: var(--brand-primary);
+  border: 1px solid rgba(0, 230, 118, 0.25);
+  font-family: var(--font-mono);
+}
+
+/* Central Play Button Overlay */
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.playCircle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(11, 15, 20, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(0, 230, 118, 0.6);
+  color: #00E676;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 230, 118, 0.25);
+}
+
+.card:hover .playCircle {
+  transform: scale(1.1);
+  background: var(--brand-primary);
+  color: #0B0F14;
+  border-color: var(--brand-primary);
+  box-shadow: 0 10px 28px rgba(0, 230, 118, 0.4);
+}
+
+/* Bottom info overlay */
+.cardFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 16px 16px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.35;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.cardDesc {
+  font-size: 12px;
+  color: #94A3B8;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  opacity: 0.9;
+}
+
+/* Playback in-card overlay controls */
+.controlsBar {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justifyContent: space-between;
+  align-items: center;
+  z-index: 4;
+  pointer-events: auto;
+}
+
+.controlBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(11, 15, 20, 0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.controlBtn:hover {
+  background: var(--brand-primary);
+  color: #0B0F14;
+  border-color: var(--brand-primary);
+}
+
+.liveIndicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #00E676;
+  background: rgba(11, 15, 20, 0.85);
+  backdrop-filter: blur(6px);
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #00E676;
+  animation: pulseDot 1.4s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* Media Queries for responsive cards display */
+@media (min-width: 1200px) {
+  .card {
+    flex: 0 0 calc((100% - 60px) / 4); /* 4 cards visible */
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 860px) {
+  .card {
+    flex: 0 0 calc((100% - 40px) / 3); /* 3 cards visible */
+  }
+}
+
+@media (max-width: 859px) and (min-width: 560px) {
+  .card {
+    flex: 0 0 calc((100% - 20px) / 2); /* 2 cards visible */
+  }
+}
+
+@media (max-width: 559px) {
+  .card {
+    flex: 0 0 74%; /* 1.3 - 1.5 cards visible for horizontal peek */
+    min-width: 220px;
+  }
+  .title {
+    font-size: 26px;
+  }
+  .section {
+    padding: 64px 0 72px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .track, .playCircle {
+    transition: none !important;
+  }
+  .liveDot {
+    animation: none !important;
+  }
+}
