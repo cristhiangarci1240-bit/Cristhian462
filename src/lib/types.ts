@@ -43,6 +43,7 @@ export interface Product {
 export interface Client {
   id: string;
   name: string;
+  email?: string;
   logo: string;
   website?: string;
   order: number;

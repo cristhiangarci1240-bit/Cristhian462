@@ -19,7 +19,9 @@ export default function AdminLayout({
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F7F8FA' }}>
-      <AdminSidebar />
+      <React.Suspense fallback={<aside style={{ width: 252 }} />}>
+        <AdminSidebar />
+      </React.Suspense>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <AdminHeader />
         <main style={{ flex: 1, padding: '32px 36px', overflowY: 'auto' }}>

@@ -25,9 +25,11 @@
 }
 
 .logoImg {
-  height: 44px;
-  width: auto;
+  width: 200px;
+  height: auto;
+  max-height: 56px;
   object-fit: contain;
+  display: block;
 }
 
 .navGroup {
@@ -185,6 +187,10 @@
 }
 
 @media (max-width: 1020px) {
+  .logoImg {
+    width: 170px;
+  }
+
   .whatsappBtn span {
     display: none;
   }
@@ -246,6 +252,10 @@
 }
 
 @media (max-width: 480px) {
+  .logoImg {
+    width: 140px;
+  }
+
   .whatsappBtn span {
     display: none;
   }

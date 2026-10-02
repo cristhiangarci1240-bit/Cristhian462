@@ -37,7 +37,7 @@ export function AdminHeader() {
         />
         <div className={styles.userInfo}>
           <span className={styles.userName}>Administrador</span>
-          <span className={styles.userEmail}>admin@tech7.com.br</span>
+          <span className={styles.userEmail}>admin@tech7electronics.com</span>
         </div>
 
         <button

@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  tech7-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tech7-electronics
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      # Node & Application Runtime
+      - NODE_ENV=production
+      - PORT=3000
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://tech7electronics.com}
+
+      # Security & Authentication
+      - JWT_SECRET=${JWT_SECRET}
+
+      # Database Configuration (Prepared for future PostgreSQL or external DB migration)
+      - DATABASE_URL=${DATABASE_URL:-}
+
+      # Hostinger Email Infrastructure Configuration
+      - MAIL_USER=${MAIL_USER:-comercial@tech7eletronics.com}
+      - MAIL_PASSWORD=${MAIL_PASSWORD:-}
+      - MAIL_IMAP_HOST=${MAIL_IMAP_HOST:-imap.hostinger.com}
+      - MAIL_IMAP_PORT=${MAIL_IMAP_PORT:-993}
+      - MAIL_IMAP_SECURE=${MAIL_IMAP_SECURE:-true}
+      - MAIL_SMTP_HOST=${MAIL_SMTP_HOST:-smtp.hostinger.com}
+      - MAIL_SMTP_PORT=${MAIL_SMTP_PORT:-465}
+      - MAIL_SMTP_SECURE=${MAIL_SMTP_SECURE:-true}
+
+    volumes:
+      # Persistent JSON Database (database.json, email_data.json, backups)
+      - ./data:/app/data
+      # Persistent Media & User Uploads
+      - ./public/uploads:/app/public/uploads
+
+    networks:
+      - tech7-network
+
+networks:
+  tech7-network:
+    driver: bridge

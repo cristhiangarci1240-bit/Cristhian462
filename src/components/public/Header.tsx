@@ -51,12 +51,18 @@ export function Header() {
       <div className={`container ${styles.inner}`}>
         {/* Logo Oficial TECH7 */}
         <Link href="/" className={styles.logoArea} aria-label="TECH7 Electronics">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={settings.logoUrl || '/brand/logo.svg'}
-            alt="TECH7 Electronics"
-            className={styles.logoImg}
-          />
+          <picture>
+            <source
+              media="(max-width: 768px)"
+              srcSet={settings.logoMobileUrl || settings.logoUrl || '/brand/logo-mobile.svg'}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={settings.logoUrl || '/brand/logo.svg'}
+              alt="TECH7 Electronics"
+              className={styles.logoImg}
+            />
+          </picture>
         </Link>
 
         {/* Grupo de Navegação & Busca */}

@@ -87,7 +87,7 @@ function LoginForm() {
               className="form-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu.email@tech7.com.br"
+              placeholder="seu.email@tech7electronics.com"
               id="login-email-input"
               autoComplete="username"
             />

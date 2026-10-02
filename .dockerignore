@@ -1,0 +1,38 @@
+# Dependencies & build outputs
+node_modules
+.next
+out
+build
+
+# Version control
+.git
+.gitignore
+
+# Environment & secrets
+.env
+.env*.local
+*.pem
+*.key
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Docker files (build context optimization)
+Dockerfile*
+docker-compose*.yml
+
+# Archives & Temporary files
+*.zip
+*.tar.gz
+*.rar
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
+
+# Knowledge and system agent artifacts
+.agents
+.gemini

@@ -230,7 +230,7 @@ export function UsuariosClient({ initialUsers }: UsuariosClientProps) {
                   type="email"
                   required
                   className="form-input"
-                  placeholder="carlos@tech7.com.br"
+                  placeholder="carlos@tech7electronics.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />

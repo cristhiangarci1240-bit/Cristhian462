@@ -3,7 +3,7 @@
     {
       "id": "usr_admin_01",
       "name": "Administrador TECH7",
-      "email": "admin@tech7.com.br",
+      "email": "admin@tech7electronics.com",
       "passwordHash": "$2a$10$GKuYbV.inrzBWj./qhPrxejCpV.amMeWngJ4sb1oA2s5kHHV49HEK",
       "role": "ADMIN",
       "createdAt": "2026-09-29T14:27:16.678Z"
@@ -11,8 +11,8 @@
   ],
   "settings": {
     "id": "default",
-    "logoUrl": "/uploads/marca/logo-tech7-1790724980566.svgz",
-    "logoMobileUrl": "/brand/logo.svg",
+    "logoUrl": "/brand/logo.svg",
+    "logoMobileUrl": "/brand/logo-mobile.svg",
     "faviconUrl": "/favicon.svg",
     "primaryColor": "#00E676",
     "secondaryColor": "#0B0F14",
@@ -23,13 +23,13 @@
     "whatsappNumber": "5511999999999",
     "whatsappDefaultMessage": "Olá, gostaria de receber mais informações.",
     "whatsappProductMessage": "Olá, estou interessado no produto [NOME DO PRODUTO]. Gostaria de receber mais informações.",
-    "contactEmail": "contato@tech7electronics.com.br",
+    "contactEmail": "contato@tech7electronics.com",
     "contactPhone": "+55 (11) 3456-7890",
     "address": "Av. Paulista, 1578 - Bela Vista, São Paulo - SP, Brasil",
     "linkedinUrl": "https://linkedin.com/company/tech7-electronics",
     "instagramUrl": "https://instagram.com/tech7electronics",
-    "updatedAt": "2026-09-29T23:36:25.009Z",
-    "loginLogoUrl": ""
+    "updatedAt": "2026-10-01T01:35:08.191Z",
+    "loginLogoUrl": "/brand/logo-login.svg"
   },
   "categories": [
     {
@@ -294,6 +294,7 @@
     {
       "id": "cli_01",
       "name": "Nexus Inovação Corporativa",
+      "email": "contato@nexus.exemplo.com.br",
       "logo": "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=300&q=80",
       "website": "https://nexus.exemplo.com.br",
       "order": 1,
@@ -304,6 +305,7 @@
     {
       "id": "cli_02",
       "name": "OmniTech Soluções Globais",
+      "email": "contato@omnitech.exemplo.com.br",
       "logo": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
       "website": "https://omnitech.exemplo.com.br",
       "order": 2,
@@ -314,6 +316,7 @@
     {
       "id": "cli_03",
       "name": "Apex Logistics Brasil",
+      "email": "operacoes@apexlog.exemplo.com.br",
       "logo": "https://images.unsplash.com/photo-1516876437184-593fda40c7ce?auto=format&fit=crop&w=300&q=80",
       "website": "https://apexlog.exemplo.com.br",
       "order": 3,
@@ -324,6 +327,7 @@
     {
       "id": "cli_04",
       "name": "Vortex Capital & Banking",
+      "email": "corporativo@vortex.exemplo.com.br",
       "logo": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=300&q=80",
       "website": "https://vortex.exemplo.com.br",
       "order": 4,
@@ -334,6 +338,7 @@
     {
       "id": "cli_05",
       "name": "Horizon Cloud Infrastructure",
+      "email": "contato@horizon.exemplo.com.br",
       "logo": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=300&q=80",
       "website": "https://horizon.exemplo.com.br",
       "order": 5,
@@ -344,6 +349,7 @@
     {
       "id": "cli_06",
       "name": "Prime Healthcare Tech",
+      "email": "atendimento@primehealth.exemplo.com.br",
       "logo": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80",
       "website": "https://primehealth.exemplo.com.br",
       "order": 6,

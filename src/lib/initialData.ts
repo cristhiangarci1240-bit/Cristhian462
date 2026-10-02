@@ -9,7 +9,7 @@ export const initialData: DatabaseSchema = {
     {
       id: 'usr_admin_01',
       name: 'Administrador TECH7',
-      email: 'admin@tech7.com.br',
+      email: 'admin@tech7electronics.com',
       passwordHash: defaultPasswordHash,
       role: 'ADMIN',
       createdAt: new Date().toISOString(),
@@ -18,8 +18,8 @@ export const initialData: DatabaseSchema = {
   settings: {
     id: 'default',
     logoUrl: '/brand/logo.svg',
-    logoMobileUrl: '/brand/logo.svg',
-    loginLogoUrl: '',
+    logoMobileUrl: '/brand/logo-mobile.svg',
+    loginLogoUrl: '/brand/logo-login.svg',
     faviconUrl: '/favicon.svg',
     primaryColor: '#00E676',
     secondaryColor: '#0B0F14',
@@ -30,7 +30,7 @@ export const initialData: DatabaseSchema = {
     whatsappNumber: '5511999999999',
     whatsappDefaultMessage: 'Olá, gostaria de receber mais informações.',
     whatsappProductMessage: 'Olá, estou interessado no produto [NOME DO PRODUTO]. Gostaria de receber mais informações.',
-    contactEmail: 'contato@tech7electronics.com.br',
+    contactEmail: 'contato@tech7electronics.com',
     contactPhone: '+55 (11) 3456-7890',
     address: 'Av. Paulista, 1578 - Bela Vista, São Paulo - SP, Brasil',
     linkedinUrl: 'https://linkedin.com/company/tech7-electronics',
