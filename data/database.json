@@ -4,7 +4,7 @@
       "id": "usr_admin_01",
       "name": "Administrador TECH7",
       "email": "admin@tech7electronics.com",
-      "passwordHash": "$2a$10$GKuYbV.inrzBWj./qhPrxejCpV.amMeWngJ4sb1oA2s5kHHV49HEK",
+      "passwordHash": "$2a$10$eVEoJYd9IlBNdfB6Ps.mV.L8QodIyHxB6N6b.9EjDl6ubk66VmMiy",
       "role": "ADMIN",
       "createdAt": "2026-09-29T14:27:16.678Z"
     }
