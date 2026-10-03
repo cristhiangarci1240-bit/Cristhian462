@@ -1,15 +1,63 @@
 import fs from 'fs';
 import path from 'path';
-import { EmailDatabaseSchema, EmailDraft, EmailCampaign, CampaignRecipient, EmailOptOut } from './emailTypes';
+import {
+  EmailDatabaseSchema,
+  EmailDraft,
+  EmailCampaign,
+  CampaignRecipient,
+  EmailOptOut,
+  EmailSettings,
+} from './emailTypes';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const EMAIL_DB_FILE = path.join(DATA_DIR, 'email_data.json');
+
+export const DEFAULT_EMAIL_SETTINGS: EmailSettings = {
+  signature: {
+    enabled: true,
+    text: 'Atenciosamente,\nEquipe TECH7 Electronics\ncomercial@tech7electronics.com',
+    imageUrl: '',
+    maxWidth: 320,
+    includeInReplies: true,
+    includeInForwards: true,
+  },
+  notifications: {
+    enabled: false,
+    recipientEmail: '',
+    notifiedUids: [],
+    notifiedMessageIds: [],
+    checkIntervalMinutes: 2,
+    lastCheckAt: undefined,
+    lastStatus: 'idle',
+    logs: [],
+  },
+  attachments: {
+    maxFileSizeBytes: 10 * 1024 * 1024, // 10MB
+    maxTotalSizeBytes: 25 * 1024 * 1024, // 25MB
+    maxFilesCount: 10,
+    allowedExtensions: [
+      '.pdf',
+      '.doc',
+      '.docx',
+      '.xls',
+      '.xlsx',
+      '.ppt',
+      '.pptx',
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.webp',
+      '.zip',
+    ],
+  },
+};
 
 const EMPTY_EMAIL_DB: EmailDatabaseSchema = {
   drafts: [],
   campaigns: [],
   campaignRecipients: [],
   emailOptOuts: [],
+  settings: DEFAULT_EMAIL_SETTINGS,
 };
 
 function ensureEmailDb(): EmailDatabaseSchema {
@@ -28,6 +76,16 @@ function ensureEmailDb(): EmailDatabaseSchema {
     if (!parsed.campaigns) parsed.campaigns = [];
     if (!parsed.campaignRecipients) parsed.campaignRecipients = [];
     if (!parsed.emailOptOuts) parsed.emailOptOuts = [];
+    if (!parsed.settings) {
+      parsed.settings = { ...DEFAULT_EMAIL_SETTINGS };
+    } else {
+      if (!parsed.settings.signature) parsed.settings.signature = { ...DEFAULT_EMAIL_SETTINGS.signature };
+      if (!parsed.settings.notifications) parsed.settings.notifications = { ...DEFAULT_EMAIL_SETTINGS.notifications };
+      if (!parsed.settings.notifications.notifiedUids) parsed.settings.notifications.notifiedUids = [];
+      if (!parsed.settings.notifications.notifiedMessageIds) parsed.settings.notifications.notifiedMessageIds = [];
+      if (!parsed.settings.notifications.logs) parsed.settings.notifications.logs = [];
+      if (!parsed.settings.attachments) parsed.settings.attachments = { ...DEFAULT_EMAIL_SETTINGS.attachments };
+    }
     return parsed;
   } catch {
     fs.writeFileSync(EMAIL_DB_FILE, JSON.stringify(EMPTY_EMAIL_DB, null, 2), 'utf-8');
@@ -41,6 +99,135 @@ function saveEmailDb(data: EmailDatabaseSchema): void {
   } catch (err) {
     console.error('[EmailDB] Erro ao salvar email_data.json:', err);
   }
+}
+
+// ─── EMAIL SETTINGS ──────────────────────────────────────
+
+export async function getEmailSettings(): Promise<EmailSettings> {
+  const db = ensureEmailDb();
+  return db.settings || DEFAULT_EMAIL_SETTINGS;
+}
+
+export async function updateEmailSettings(partial: Partial<EmailSettings>): Promise<EmailSettings> {
+  const db = ensureEmailDb();
+  const current = db.settings || DEFAULT_EMAIL_SETTINGS;
+  db.settings = {
+    signature: {
+      ...current.signature,
+      ...(partial.signature || {}),
+    },
+    notifications: {
+      ...current.notifications,
+      ...(partial.notifications || {}),
+    },
+    attachments: {
+      ...current.attachments,
+      ...(partial.attachments || {}),
+    },
+  };
+  saveEmailDb(db);
+  return db.settings;
+}
+
+export async function isMessageNotified(uid: number, messageId?: string): Promise<boolean> {
+  const db = ensureEmailDb();
+  const uids = db.settings?.notifications?.notifiedUids || [];
+  if (uids.includes(uid)) return true;
+  if (messageId && db.settings?.notifications?.notifiedMessageIds?.includes(messageId)) {
+    return true;
+  }
+  return false;
+}
+
+export async function markMessageNotified(uid: number, messageId?: string): Promise<void> {
+  const db = ensureEmailDb();
+  if (!db.settings) db.settings = { ...DEFAULT_EMAIL_SETTINGS };
+  if (!db.settings.notifications) db.settings.notifications = { ...DEFAULT_EMAIL_SETTINGS.notifications };
+  if (!db.settings.notifications.notifiedUids) db.settings.notifications.notifiedUids = [];
+  if (!db.settings.notifications.notifiedMessageIds) db.settings.notifications.notifiedMessageIds = [];
+
+  let changed = false;
+  if (!db.settings.notifications.notifiedUids.includes(uid)) {
+    db.settings.notifications.notifiedUids.push(uid);
+    changed = true;
+  }
+  if (messageId && !db.settings.notifications.notifiedMessageIds.includes(messageId)) {
+    db.settings.notifications.notifiedMessageIds.push(messageId);
+    changed = true;
+  }
+
+  if (changed) {
+    if (db.settings.notifications.notifiedUids.length > 5000) {
+      db.settings.notifications.notifiedUids = db.settings.notifications.notifiedUids.slice(-5000);
+    }
+    if (db.settings.notifications.notifiedMessageIds.length > 5000) {
+      db.settings.notifications.notifiedMessageIds = db.settings.notifications.notifiedMessageIds.slice(-5000);
+    }
+    saveEmailDb(db);
+  }
+}
+
+export async function markMultipleMessagesNotified(items: Array<{ uid: number; messageId?: string }>): Promise<void> {
+  const db = ensureEmailDb();
+  if (!db.settings) db.settings = { ...DEFAULT_EMAIL_SETTINGS };
+  if (!db.settings.notifications) db.settings.notifications = { ...DEFAULT_EMAIL_SETTINGS.notifications };
+  if (!db.settings.notifications.notifiedUids) db.settings.notifications.notifiedUids = [];
+  if (!db.settings.notifications.notifiedMessageIds) db.settings.notifications.notifiedMessageIds = [];
+
+  const existingUidSet = new Set(db.settings.notifications.notifiedUids);
+  const existingMsgIdSet = new Set(db.settings.notifications.notifiedMessageIds);
+  let changed = false;
+
+  for (const item of items) {
+    if (!existingUidSet.has(item.uid)) {
+      existingUidSet.add(item.uid);
+      changed = true;
+    }
+    if (item.messageId && !existingMsgIdSet.has(item.messageId)) {
+      existingMsgIdSet.add(item.messageId);
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    db.settings.notifications.notifiedUids = Array.from(existingUidSet).slice(-5000);
+    db.settings.notifications.notifiedMessageIds = Array.from(existingMsgIdSet).slice(-5000);
+    saveEmailDb(db);
+  }
+}
+
+export async function recordNotificationLog(log: {
+  recipientEmail: string;
+  uid: number;
+  messageId?: string;
+  subject: string;
+  from: string;
+  status: 'success' | 'failed';
+  error?: string;
+}): Promise<void> {
+  const db = ensureEmailDb();
+  if (!db.settings) db.settings = { ...DEFAULT_EMAIL_SETTINGS };
+  if (!db.settings.notifications) db.settings.notifications = { ...DEFAULT_EMAIL_SETTINGS.notifications };
+  if (!db.settings.notifications.logs) db.settings.notifications.logs = [];
+
+  const logItem = {
+    id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+    sentAt: new Date().toISOString(),
+    recipientEmail: log.recipientEmail,
+    uid: log.uid,
+    messageId: log.messageId,
+    subject: log.subject,
+    from: log.from,
+    status: log.status,
+    error: log.error,
+  };
+
+  db.settings.notifications.logs.unshift(logItem);
+  if (db.settings.notifications.logs.length > 50) {
+    db.settings.notifications.logs = db.settings.notifications.logs.slice(0, 50);
+  }
+
+  saveEmailDb(db);
 }
 
 function generateId(prefix: string): string {

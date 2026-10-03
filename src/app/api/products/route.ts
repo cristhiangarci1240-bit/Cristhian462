@@ -90,6 +90,21 @@ export async function POST(request: Request) {
       galleryImages,
       order: Number(body.order) || 0,
       isActive: body.isActive !== undefined ? Boolean(body.isActive) : true,
+      // Marketplace e Rastreabilidade
+      gtin: body.gtin ? String(body.gtin).trim() : undefined,
+      marketplace: body.marketplace ? String(body.marketplace) as any : undefined,
+      sourceUrl: body.sourceUrl ? String(body.sourceUrl).trim() : undefined,
+      sourceProductId: body.sourceProductId ? String(body.sourceProductId).trim() : undefined,
+      asin: body.asin ? String(body.asin).trim() : undefined,
+      // Controle de Preço e Margem
+      costPrice: body.costPrice !== undefined && body.costPrice !== '' ? Number(body.costPrice) : undefined,
+      sourcePrice: body.sourcePrice !== undefined && body.sourcePrice !== '' ? Number(body.sourcePrice) : undefined,
+      sellingPrice: body.sellingPrice !== undefined && body.sellingPrice !== '' ? Number(body.sellingPrice) : undefined,
+      minMarginPercent: body.minMarginPercent !== undefined && body.minMarginPercent !== '' ? Number(body.minMarginPercent) : undefined,
+      targetMarginPercent: body.targetMarginPercent !== undefined && body.targetMarginPercent !== '' ? Number(body.targetMarginPercent) : undefined,
+      maxPurchasePrice: body.maxPurchasePrice !== undefined && body.maxPurchasePrice !== '' ? Number(body.maxPurchasePrice) : undefined,
+      minSellingPrice: body.minSellingPrice !== undefined && body.minSellingPrice !== '' ? Number(body.minSellingPrice) : undefined,
+      currency: body.currency === 'USD' ? 'USD' : 'BRL',
     });
 
     return NextResponse.json(newProduct, { status: 201 });

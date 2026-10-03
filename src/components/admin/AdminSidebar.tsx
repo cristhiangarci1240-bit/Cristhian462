@@ -22,6 +22,7 @@ import {
   FileEdit,
   Trash2,
   Megaphone,
+  Receipt,
 } from 'lucide-react';
 import { useBrand } from '@/components/BrandProvider';
 import styles from './AdminSidebar.module.css';
@@ -39,17 +40,23 @@ export function AdminSidebar() {
     { label: 'Favoritos', folder: 'starred', href: '/admin/email?folder=starred', icon: <Star size={14} /> },
     { label: 'Lixeira', folder: 'trash', href: '/admin/email?folder=trash', icon: <Trash2 size={14} /> },
     { label: 'Campanhas', folder: 'campaigns', href: '/admin/email?folder=campaigns', icon: <Megaphone size={14} /> },
+    { label: 'Configurações', folder: 'settings', href: '/admin/email?folder=settings', icon: <Settings size={14} /> },
+  ];
+
+  const fiscalSubItems = [
+    { label: 'Fazer Nota Fiscal', href: '/admin/fiscal/emissor', icon: <Receipt size={14} /> },
   ];
 
   const menuItems = [
     { label: 'Dashboard', href: '/admin', icon: <LayoutDashboard size={17} /> },
-    { label: 'E-mail', href: '/admin/email', icon: <Mail size={17} />, isEmail: true },
     { label: 'Produtos', href: '/admin/produtos', icon: <Package size={17} /> },
     { label: 'Categorias', href: '/admin/categorias', icon: <Layers size={17} /> },
     { label: 'Clientes', href: '/admin/clientes', icon: <Users2 size={17} /> },
+    { label: 'Pedidos / Consultas', href: '/admin/whatsapp', icon: <FileCheck size={17} /> },
+    { label: 'E-mail', href: '/admin/email', icon: <Mail size={17} />, isEmail: true },
+    { label: 'Fiscal', href: '/admin/fiscal', icon: <Receipt size={17} />, isFiscal: true },
     { label: 'Vídeos', href: '/admin/videos', icon: <VideoIcon size={17} /> },
     { label: 'Avaliações', href: '/admin/avaliacoes', icon: <Star size={17} /> },
-    { label: 'Pedidos / Consultas', href: '/admin/whatsapp', icon: <FileCheck size={17} /> },
     { label: 'WhatsApp', href: '/admin/whatsapp', icon: <MessageSquare size={17} /> },
     { label: 'Aparência', href: '/admin/aparencia', icon: <Palette size={17} /> },
     { label: 'Configuração', href: '/admin/configuracao', icon: <Settings size={17} /> },
@@ -57,6 +64,7 @@ export function AdminSidebar() {
   ];
 
   const isEmailActive = pathname.startsWith('/admin/email');
+  const isFiscalActive = pathname.startsWith('/admin/fiscal');
 
   return (
     <aside className={styles.sidebar}>
@@ -89,6 +97,23 @@ export function AdminSidebar() {
                 <div className={styles.subNav}>
                   {emailSubItems.map((sub, sIdx) => {
                     const isSubActive = currentFolder === sub.folder;
+                    return (
+                      <Link
+                        key={sIdx}
+                        href={sub.href}
+                        className={`${styles.subItem} ${isSubActive ? styles.subItemActive : ''}`}
+                      >
+                        {sub.icon}
+                        <span style={{ marginLeft: 6 }}>{sub.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+              {item.isFiscal && isFiscalActive && (
+                <div className={styles.subNav}>
+                  {fiscalSubItems.map((sub, sIdx) => {
+                    const isSubActive = pathname === sub.href;
                     return (
                       <Link
                         key={sIdx}

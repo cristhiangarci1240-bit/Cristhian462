@@ -19,6 +19,14 @@ export async function GET(request: Request) {
     const search = searchParams.get('search') || undefined;
 
     const result = await listMessages({ folder, page, pageSize, search });
+
+    // Trigger notification check for new unnotified emails
+    if (folder.toLowerCase() === 'inbox') {
+      import('@/lib/emailMonitor').then(({ checkAndNotifyNewEmails }) => {
+        checkAndNotifyNewEmails().catch(() => {});
+      }).catch(() => {});
+    }
+
     return NextResponse.json(result);
   } catch (error: any) {
     console.error('[Email Inbox] Erro:', error?.message || error);

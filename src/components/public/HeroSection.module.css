@@ -24,7 +24,6 @@
   position: absolute;
   inset: 0;
   /* Panoramic image spans full width */
-  background-image: url('/images/hero-tech-ecosystem.jpg');
   background-size: cover;
   /* center-right keeps the globe in view and left darker for text */
   background-position: 55% center;

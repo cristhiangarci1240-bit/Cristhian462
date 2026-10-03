@@ -101,6 +101,53 @@ export interface CampaignRecipient {
   unsubscribed?: boolean;
 }
 
+// ─── EMAIL SETTINGS ──────────────────────────────────────
+
+export interface EmailSignatureSettings {
+  enabled: boolean;
+  text: string;
+  imageUrl: string;
+  maxWidth: number;
+  includeInReplies: boolean;
+  includeInForwards: boolean;
+}
+
+export interface EmailNotificationLog {
+  id: string;
+  sentAt: string;
+  recipientEmail: string;
+  uid: number;
+  messageId?: string;
+  subject: string;
+  from: string;
+  status: 'success' | 'failed';
+  error?: string;
+}
+
+export interface EmailNotificationSettings {
+  enabled: boolean;
+  recipientEmail: string;
+  notifiedUids: number[];
+  notifiedMessageIds?: string[];
+  checkIntervalMinutes: number;
+  lastCheckAt?: string;
+  lastStatus?: string;
+  logs?: EmailNotificationLog[];
+}
+
+export interface EmailAttachmentSettings {
+  maxFileSizeBytes: number;
+  maxTotalSizeBytes: number;
+  maxFilesCount: number;
+  allowedExtensions: string[];
+}
+
+export interface EmailSettings {
+  signature: EmailSignatureSettings;
+  notifications: EmailNotificationSettings;
+  attachments: EmailAttachmentSettings;
+}
+
 // ─── EMAIL DATABASE SCHEMA EXTENSION ─────────────────────
 
 export interface EmailDatabaseSchema {
@@ -109,6 +156,8 @@ export interface EmailDatabaseSchema {
   campaignRecipients: CampaignRecipient[];
   // Track email opt-outs per email address
   emailOptOuts: EmailOptOut[];
+  // Persistent system email settings
+  settings?: EmailSettings;
 }
 
 export interface EmailOptOut {
@@ -116,3 +165,4 @@ export interface EmailOptOut {
   optedOutAt: string;
   reason?: string;
 }
+

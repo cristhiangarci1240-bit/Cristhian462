@@ -7,8 +7,15 @@ import { useBrand } from '@/components/BrandProvider';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import styles from './HeroSection.module.css';
 
-export function HeroSection() {
+interface HeroSectionProps {
+  heroImage?: string;
+}
+
+export function HeroSection({ heroImage }: HeroSectionProps = {}) {
   const { settings } = useBrand();
+
+  const activeHeroImage =
+    heroImage || settings.heroImage || '/images/hero-tech-ecosystem.jpg';
 
   const handleWhatsApp = () => {
     try {
@@ -51,8 +58,12 @@ export function HeroSection() {
 
   return (
     <section className={styles.hero} aria-label="Seção principal TECH7">
-      {/* Full-bleed technology background */}
-      <div className={styles.heroBg} aria-hidden="true" />
+      {/* Full-bleed technology background with dynamic setting */}
+      <div
+        className={styles.heroBg}
+        style={{ backgroundImage: `url('${activeHeroImage}')` }}
+        aria-hidden="true"
+      />
 
       {/* Gradient overlay: dark-left to transparent-right */}
       <div className={styles.heroOverlay} aria-hidden="true" />

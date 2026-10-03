@@ -17,13 +17,16 @@
 .brandCol {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 18px;
 }
 
 .logoImg {
-  height: 42px;
-  width: auto;
+  width: 235px;
+  height: auto;
+  max-width: 100%;
   object-fit: contain;
+  display: block;
 }
 
 .brandDesc {
@@ -124,6 +127,9 @@
   .brandCol {
     grid-column: 1 / -1;
   }
+  .logoImg {
+    width: 185px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -133,5 +139,8 @@
   }
   .brandCol {
     grid-column: auto;
+  }
+  .logoImg {
+    width: 165px;
   }
 }

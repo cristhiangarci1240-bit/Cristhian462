@@ -26,6 +26,9 @@ import {
   X,
   Users,
   SendHorizontal,
+  Settings,
+  Upload,
+  Image as ImageIcon,
 } from 'lucide-react';
 import type { Client } from '@/lib/types';
 import type {
@@ -34,6 +37,7 @@ import type {
   EmailDraft,
   EmailCampaign,
   CampaignRecipient,
+  EmailSettings,
 } from '@/lib/emailTypes';
 import styles from './EmailClient.module.css';
 
@@ -42,7 +46,7 @@ interface EmailClientProps {
   mailUser: string;
 }
 
-type ActiveFolder = 'inbox' | 'sent' | 'drafts' | 'starred' | 'trash' | 'campaigns';
+type ActiveFolder = 'inbox' | 'sent' | 'drafts' | 'starred' | 'trash' | 'campaigns' | 'settings';
 
 export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
   const router = useRouter();
@@ -89,6 +93,19 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
   const [composeBody, setComposeBody] = useState('');
   const [inReplyToMsgId, setInReplyToMsgId] = useState<string | undefined>(undefined);
   const [isSending, setIsSending] = useState(false);
+  const [composeAttachments, setComposeAttachments] = useState<File[]>([]);
+  const composeFileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  // Settings State
+  const [emailSettings, setEmailSettings] = useState<EmailSettings | null>(null);
+  const [accountInfo, setAccountInfo] = useState<{ user: string; status: string; imapHost: string; smtpHost: string } | null>(null);
+  const [isLoadingSettings, setIsLoadingSettings] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [testNotificationEmail, setTestNotificationEmail] = useState('');
+  const [testNotificationStatus, setTestNotificationStatus] = useState<string | null>(null);
+  const [isTestingNotification, setIsTestingNotification] = useState(false);
+  const [uploadingSignature, setUploadingSignature] = useState(false);
+  const signatureFileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Campaign Wizard Modal state
   const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
@@ -154,6 +171,10 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
     }
     if (activeFolder === 'drafts') {
       loadDrafts();
+      return;
+    }
+    if (activeFolder === 'settings') {
+      loadEmailSettings();
       return;
     }
 
@@ -243,6 +264,137 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
     }
   };
 
+  // ─── FETCH SETTINGS ──────────────────────────────────────
+
+  const loadEmailSettings = useCallback(async () => {
+    setIsLoadingSettings(true);
+    try {
+      const res = await fetch('/api/admin/email/settings');
+      if (res.ok) {
+        const data = await res.json();
+        setEmailSettings(data.settings);
+        setAccountInfo(data.account);
+        if (data.settings?.notifications?.recipientEmail) {
+          setTestNotificationEmail(data.settings.notifications.recipientEmail);
+        }
+      }
+    } catch (err) {
+      console.error('Erro ao carregar configurações de e-mail:', err);
+    } finally {
+      setIsLoadingSettings(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadEmailSettings();
+  }, [loadEmailSettings]);
+
+  const handleSaveSettings = async (partial: Partial<EmailSettings>) => {
+    setIsSavingSettings(true);
+    try {
+      const res = await fetch('/api/admin/email/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(partial),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Erro ao salvar configurações.');
+      }
+      const data = await res.json();
+      setEmailSettings(data.settings);
+      setSuccessMsg('Configurações atualizadas com sucesso.');
+      setTimeout(() => setSuccessMsg(null), 3000);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Erro ao salvar configurações.');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
+  const handleUploadSignatureImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'].includes(file.type)) {
+      setErrorMsg('Formato inválido. Use JPG, PNG, WEBP ou SVG.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('A imagem não pode ultrapassar 5 MB.');
+      return;
+    }
+
+    setUploadingSignature(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'email');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Erro no envio da imagem.');
+      }
+
+      const data = await res.json();
+      if (data.url && emailSettings) {
+        const newSig = {
+          ...emailSettings.signature,
+          imageUrl: data.url,
+        };
+        await handleSaveSettings({ signature: newSig });
+        setSuccessMsg('Imagem de assinatura enviada com sucesso.');
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Erro ao enviar imagem de assinatura.');
+    } finally {
+      setUploadingSignature(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveSignatureImage = async () => {
+    if (!emailSettings) return;
+    const newSig = {
+      ...emailSettings.signature,
+      imageUrl: '',
+    };
+    await handleSaveSettings({ signature: newSig });
+  };
+
+  const handleSendTestNotification = async () => {
+    if (!testNotificationEmail.trim()) {
+      setTestNotificationStatus('Informe um e-mail de notificação válido.');
+      return;
+    }
+    setIsTestingNotification(true);
+    setTestNotificationStatus(null);
+    try {
+      const res = await fetch('/api/admin/email/test-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipientEmail: testNotificationEmail.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setTestNotificationStatus('Notificação enviada com sucesso.');
+      } else {
+        setTestNotificationStatus(data.error || 'Não foi possível enviar a notificação.');
+      }
+      await loadEmailSettings();
+    } catch {
+      setTestNotificationStatus('Não foi possível enviar a notificação.');
+    } finally {
+      setIsTestingNotification(false);
+    }
+  };
+
   // ─── READ FULL MESSAGE ──────────────────────────────────
 
   const handleOpenMessage = async (uid: number) => {
@@ -323,7 +475,13 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
     setComposeCc('');
     setComposeBcc('');
     setComposeSubject('');
-    setComposeBody('');
+    setComposeAttachments([]);
+
+    let defaultBody = 'Olá,\n\n';
+    if (emailSettings?.signature?.enabled) {
+      defaultBody += `\n\n${emailSettings.signature.text || 'Atenciosamente,\nTECH7 Electronics'}`;
+    }
+    setComposeBody(defaultBody);
     setInReplyToMsgId(undefined);
     setIsComposeOpen(true);
   };
@@ -340,9 +498,15 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
     const subj = full.subject.startsWith('Re:') ? full.subject : `Re: ${full.subject}`;
     setComposeSubject(subj);
     setInReplyToMsgId(full.messageId);
+    setComposeAttachments([]);
+
+    let replySignature = '';
+    if (emailSettings?.signature?.enabled && emailSettings.signature.includeInReplies) {
+      replySignature = `\n\n${emailSettings.signature.text || 'Atenciosamente,\nTECH7 Electronics'}\n`;
+    }
 
     const quoteHeader = `\n\n\n--- Mensagem Original ---\nDe: ${full.from} <${full.fromEmail}>\nData: ${new Date(full.date).toLocaleString('pt-BR')}\nAssunto: ${full.subject}\n\n`;
-    setComposeBody(quoteHeader + (full.bodyText || ''));
+    setComposeBody(`Olá,${replySignature}` + quoteHeader + (full.bodyText || ''));
     setIsComposeOpen(true);
   };
 
@@ -354,10 +518,56 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
     const subj = full.subject.startsWith('Enc:') ? full.subject : `Enc: ${full.subject}`;
     setComposeSubject(subj);
     setInReplyToMsgId(undefined);
+    setComposeAttachments([]);
+
+    let forwardSignature = '';
+    if (emailSettings?.signature?.enabled && emailSettings.signature.includeInForwards) {
+      forwardSignature = `\n\n${emailSettings.signature.text || 'Atenciosamente,\nTECH7 Electronics'}\n`;
+    }
 
     const forwardHeader = `\n\n\n--- Mensagem Encaminhada ---\nDe: ${full.from} <${full.fromEmail}>\nData: ${new Date(full.date).toLocaleString('pt-BR')}\nAssunto: ${full.subject}\nPara: ${(full.to || []).join(', ')}\n\n`;
-    setComposeBody(forwardHeader + (full.bodyText || ''));
+    setComposeBody(forwardSignature + forwardHeader + (full.bodyText || ''));
     setIsComposeOpen(true);
+  };
+
+  const handleAddAttachments = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const DANGEROUS = [
+      '.exe', '.bat', '.cmd', '.ps1', '.scr', '.msi', '.com', '.vbs', '.js',
+      '.sh', '.bash', '.php', '.phtml', '.py', '.jar', '.dll'
+    ];
+    const newFiles: File[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+      if (DANGEROUS.includes(ext)) {
+        setErrorMsg(`Arquivo com formato executável/perigoso não permitido: ${file.name}`);
+        continue;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        setErrorMsg(`O arquivo ${file.name} excede o limite individual de 10 MB.`);
+        continue;
+      }
+      newFiles.push(file);
+    }
+
+    setComposeAttachments((prev) => {
+      const combined = [...prev, ...newFiles];
+      if (combined.length > 10) {
+        setErrorMsg('Máximo de 10 anexos permitidos.');
+        return combined.slice(0, 10);
+      }
+      return combined;
+    });
+
+    e.target.value = '';
+  };
+
+  const handleRemoveAttachment = (indexToRemove: number) => {
+    setComposeAttachments((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
   const handleSaveDraft = async () => {
@@ -378,6 +588,7 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
       if (!res.ok) throw new Error('Não foi possível salvar o rascunho.');
       setSuccessMsg('Rascunho salvo com sucesso.');
       setIsComposeOpen(false);
+      setComposeAttachments([]);
       if (activeFolder === 'drafts') loadDrafts();
       setTimeout(() => setSuccessMsg(null), 3000);
     } catch (err: any) {
@@ -394,21 +605,33 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
     setIsSending(true);
     setErrorMsg(null);
     try {
+      let formattedHtml = `<div style="font-family:sans-serif;font-size:14px;color:#1E293B;line-height:1.6;">${composeBody.replace(
+        /\n/g,
+        '<br/>'
+      )}</div>`;
+
+      // If signature image is configured and enabled, append to formatted HTML
+      if (emailSettings?.signature?.enabled && emailSettings.signature.imageUrl) {
+        const maxW = emailSettings.signature.maxWidth || 320;
+        formattedHtml += `<div style="margin-top:20px;"><img src="${emailSettings.signature.imageUrl}" alt="Assinatura" style="max-width:${maxW}px;height:auto;" /></div>`;
+      }
+
+      const formData = new FormData();
+      formData.append('to', composeTo);
+      if (composeCc) formData.append('cc', composeCc);
+      if (composeBcc) formData.append('bcc', composeBcc);
+      formData.append('subject', composeSubject);
+      formData.append('bodyHtml', formattedHtml);
+      formData.append('text', composeBody);
+      if (inReplyToMsgId) formData.append('inReplyTo', inReplyToMsgId);
+
+      for (const file of composeAttachments) {
+        formData.append('attachments', file);
+      }
+
       const res = await fetch('/api/admin/email/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: composeTo,
-          cc: composeCc || undefined,
-          bcc: composeBcc || undefined,
-          subject: composeSubject,
-          bodyHtml: `<div style="font-family:sans-serif;font-size:14px;color:#1E293B;line-height:1.6;">${composeBody.replace(
-            /\n/g,
-            '<br/>'
-          )}</div>`,
-          text: composeBody,
-          inReplyTo: inReplyToMsgId,
-        }),
+        body: formData,
       });
 
       if (!res.ok) {
@@ -418,6 +641,7 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
 
       setSuccessMsg('E-mail enviado com sucesso.');
       setIsComposeOpen(false);
+      setComposeAttachments([]);
       // If was editing a draft, delete it
       if (composeId) {
         fetch(`/api/admin/email/drafts?id=${composeId}`, { method: 'DELETE' }).catch(() => {});
@@ -611,7 +835,7 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
           <span className={styles.accountBadge}>{mailUser}</span>
         </div>
 
-        {activeFolder !== 'campaigns' && (
+        {activeFolder !== 'campaigns' && activeFolder !== 'settings' && (
           <div className={styles.searchBox}>
             <Search size={15} color="#94A3B8" />
             <input
@@ -627,12 +851,17 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
 
         <div className={styles.topBarActions}>
           <button
-            onClick={loadMessages}
-            disabled={isLoading}
+            onClick={() => {
+              if (activeFolder === 'settings') loadEmailSettings();
+              else if (activeFolder === 'campaigns') loadCampaigns();
+              else if (activeFolder === 'drafts') loadDrafts();
+              else loadMessages();
+            }}
+            disabled={isLoading || isLoadingSettings}
             className={styles.btnIcon}
             title="Atualizar caixa de e-mail"
           >
-            <RefreshCw size={15} className={isLoading ? 'spin' : ''} />
+            <RefreshCw size={15} className={isLoading || isLoadingSettings ? 'spin' : ''} />
           </button>
           {activeFolder === 'campaigns' ? (
             <button onClick={() => handleOpenCampaignModal()} className={styles.btnPrimary}>
@@ -719,12 +948,490 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
               <span>Campanhas</span>
             </span>
           </button>
+
+          <div className={styles.folderDivider} />
+
+          <button
+            className={`${styles.folderBtn} ${activeFolder === 'settings' ? styles.folderBtnActive : ''}`}
+            onClick={() => switchFolder('settings')}
+          >
+            <span className={styles.folderBtnLeft}>
+              <Settings size={16} />
+              <span>Configurações</span>
+            </span>
+          </button>
         </aside>
 
         {/* ── CONTENT PANE ── */}
         <main className={styles.contentPane}>
-          {/* 1. CAMPAIGNS VIEW */}
-          {activeFolder === 'campaigns' ? (
+          {/* 0. SETTINGS VIEW */}
+          {activeFolder === 'settings' ? (
+            <div className={styles.settingsPane}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
+                <div>
+                  <h2 className={styles.settingsTitle}>Configurações de E-mail Corporativo</h2>
+                  <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0 0' }}>
+                    Gerencie a conta oficial, assinatura de e-mail, canal de notificações e anexos.
+                  </p>
+                </div>
+                <button
+                  onClick={() => loadEmailSettings()}
+                  disabled={isLoadingSettings}
+                  className={styles.btnSecondary}
+                  style={{ fontSize: 13 }}
+                  title="Recarregar configurações"
+                >
+                  <RefreshCw size={14} className={isLoadingSettings ? 'spin' : ''} />
+                  <span>Atualizar</span>
+                </button>
+              </div>
+
+              {/* 1. CONTA DE E-MAIL */}
+              <div className={styles.settingsCard}>
+                <div className={styles.settingsCardHeader}>
+                  <div className={styles.settingsCardTitle}>
+                    <Mail size={17} color="#008744" />
+                    <span>Conta de E-mail</span>
+                  </div>
+                  <div>
+                    {accountInfo?.status === 'connected' ? (
+                      <span className={styles.statusConnected}>
+                        <CheckCircle size={14} /> Conectado
+                      </span>
+                    ) : (
+                      <span className={styles.statusNotConfigured}>
+                        <AlertCircle size={14} /> Não configurado
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className={styles.formGrid}>
+                  <div className={styles.settingRow}>
+                    <span className={styles.settingLabel}>E-mail Oficial:</span>
+                    <span className={styles.formInputReadonly}>{mailUser}</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+                    <div className={styles.settingRow}>
+                      <span className={styles.settingLabel}>Servidor IMAP:</span>
+                      <span className={styles.formInputReadonly}>{accountInfo?.imapHost || 'imap.hostinger.com'} (Porta 993 SSL)</span>
+                    </div>
+                    <div className={styles.settingRow}>
+                      <span className={styles.settingLabel}>Servidor SMTP:</span>
+                      <span className={styles.formInputReadonly}>{accountInfo?.smtpHost || 'smtp.hostinger.com'} (Porta 465 SSL)</span>
+                    </div>
+                  </div>
+                  <p className={styles.settingDesc}>
+                    As credenciais de segurança e senhas permanecem protegidas nas variáveis de ambiente do servidor e nunca são expostas ao navegador.
+                  </p>
+                </div>
+              </div>
+
+              {/* 2. ASSINATURA */}
+              <div className={styles.settingsCard}>
+                <div className={styles.settingsCardHeader}>
+                  <div className={styles.settingsCardTitle}>
+                    <FileEdit size={17} color="#008744" />
+                    <span>Assinatura de E-mail</span>
+                  </div>
+                  <label className={styles.toggleLabel}>
+                    <input
+                      type="checkbox"
+                      checked={emailSettings?.signature?.enabled ?? true}
+                      onChange={(e) => {
+                        if (!emailSettings) return;
+                        handleSaveSettings({
+                          signature: { ...emailSettings.signature, enabled: e.target.checked },
+                        });
+                      }}
+                    />
+                    <span>Ativar assinatura</span>
+                  </label>
+                </div>
+
+                <div className={styles.formGrid}>
+                  <div className={styles.settingRow}>
+                    <span className={styles.settingLabel}>Texto da Assinatura:</span>
+                    <textarea
+                      rows={4}
+                      value={emailSettings?.signature?.text ?? ''}
+                      onChange={(e) => {
+                        if (!emailSettings) return;
+                        setEmailSettings({
+                          ...emailSettings,
+                          signature: { ...emailSettings.signature, text: e.target.value },
+                        });
+                      }}
+                      onBlur={() => {
+                        if (!emailSettings) return;
+                        handleSaveSettings({ signature: emailSettings.signature });
+                      }}
+                      placeholder="Ex: Atenciosamente,&#10;Equipe TECH7 Electronics&#10;www.tech7electronics.com"
+                      className={styles.formTextarea}
+                      style={{ minHeight: 90 }}
+                    />
+                  </div>
+
+                  <div className={styles.settingRow}>
+                    <span className={styles.settingLabel}>Imagem da Assinatura / Rodapé:</span>
+                    <div className={styles.signaturePreviewArea}>
+                      {emailSettings?.signature?.imageUrl ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={emailSettings.signature.imageUrl}
+                            alt="Assinatura TECH7"
+                            className={styles.signatureImgPreview}
+                            style={{ maxWidth: `${emailSettings.signature.maxWidth || 320}px` }}
+                          />
+                          <div className={styles.uploadButtonsRow}>
+                            <button
+                              type="button"
+                              onClick={() => signatureFileInputRef.current?.click()}
+                              disabled={uploadingSignature}
+                              className={styles.btnSecondary}
+                              style={{ fontSize: 13 }}
+                            >
+                              <Upload size={14} /> {uploadingSignature ? 'Enviando...' : 'Substituir Imagem'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleRemoveSignatureImage}
+                              className={styles.btnSecondary}
+                              style={{ fontSize: 13, color: '#DC2626' }}
+                            >
+                              <Trash2 size={14} /> Remover Imagem
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: 20 }}>
+                          <ImageIcon size={32} color="#94A3B8" />
+                          <p style={{ margin: 0, fontSize: 13, color: '#64748B' }}>
+                            Nenhuma imagem configurada como rodapé/assinatura.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => signatureFileInputRef.current?.click()}
+                            disabled={uploadingSignature}
+                            className={styles.btnPrimary}
+                            style={{ fontSize: 13 }}
+                          >
+                            <Upload size={14} /> {uploadingSignature ? 'Enviando...' : 'Upload da Imagem'}
+                          </button>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        ref={signatureFileInputRef}
+                        onChange={handleUploadSignatureImage}
+                        style={{ display: 'none' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+                    <div className={styles.settingRow}>
+                      <span className={styles.settingLabel}>Largura Máxima da Imagem (px):</span>
+                      <input
+                        type="number"
+                        min={100}
+                        max={800}
+                        value={emailSettings?.signature?.maxWidth ?? 320}
+                        onChange={(e) => {
+                          if (!emailSettings) return;
+                          const val = parseInt(e.target.value, 10) || 320;
+                          setEmailSettings({
+                            ...emailSettings,
+                            signature: { ...emailSettings.signature, maxWidth: val },
+                          });
+                        }}
+                        onBlur={() => {
+                          if (!emailSettings) return;
+                          handleSaveSettings({ signature: emailSettings.signature });
+                        }}
+                        className={styles.formInput}
+                        style={{ maxWidth: 160 }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, justifyContent: 'center' }}>
+                      <label className={styles.toggleLabel} style={{ fontSize: 13 }}>
+                        <input
+                          type="checkbox"
+                          checked={emailSettings?.signature?.includeInReplies ?? true}
+                          onChange={(e) => {
+                            if (!emailSettings) return;
+                            handleSaveSettings({
+                              signature: { ...emailSettings.signature, includeInReplies: e.target.checked },
+                            });
+                          }}
+                        />
+                        <span>Inserir assinatura em respostas</span>
+                      </label>
+                      <label className={styles.toggleLabel} style={{ fontSize: 13 }}>
+                        <input
+                          type="checkbox"
+                          checked={emailSettings?.signature?.includeInForwards ?? true}
+                          onChange={(e) => {
+                            if (!emailSettings) return;
+                            handleSaveSettings({
+                              signature: { ...emailSettings.signature, includeInForwards: e.target.checked },
+                            });
+                          }}
+                        />
+                        <span>Inserir assinatura em reencaminhamentos</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. NOTIFICAÇÕES */}
+              <div className={styles.settingsCard}>
+                <div className={styles.settingsCardHeader}>
+                  <div className={styles.settingsCardTitle}>
+                    <Inbox size={17} color="#008744" />
+                    <span>Notificações para E-mail Pessoal</span>
+                  </div>
+                  <label className={styles.toggleLabel}>
+                    <input
+                      type="checkbox"
+                      checked={emailSettings?.notifications?.enabled ?? false}
+                      onChange={(e) => {
+                        if (!emailSettings) return;
+                        handleSaveSettings({
+                          notifications: { ...emailSettings.notifications, enabled: e.target.checked },
+                        });
+                      }}
+                    />
+                    <span>Ativar notificações</span>
+                  </label>
+                </div>
+
+                <div className={styles.formGrid}>
+                  <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>
+                    Quando chegar um novo e-mail corporativo em <strong>{mailUser}</strong>, o servidor da TECH7 detectará automaticamente a mensagem via IMAP e enviará um alerta para o seu e-mail pessoal configurado, mesmo se você fechar o navegador, sair do painel ou desligar o computador.
+                  </p>
+
+                  {!testNotificationEmail.trim() && (
+                    <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8, padding: '10px 14px' }}>
+                      <p style={{ margin: 0, fontSize: 13, color: '#B45309', fontWeight: 600 }}>
+                        ⚠️ Configure um e-mail pessoal para receber notificações.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className={styles.settingRow}>
+                    <span className={styles.settingLabel}>E-mail pessoal para receber notificações:</span>
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                      <input
+                        type="email"
+                        placeholder="seu-email-pessoal@gmail.com"
+                        value={testNotificationEmail}
+                        onChange={(e) => {
+                          setTestNotificationEmail(e.target.value);
+                          if (emailSettings) {
+                            setEmailSettings({
+                              ...emailSettings,
+                              notifications: { ...emailSettings.notifications, recipientEmail: e.target.value },
+                            });
+                          }
+                        }}
+                        onBlur={() => {
+                          if (!emailSettings) return;
+                          handleSaveSettings({
+                            notifications: { ...emailSettings.notifications, recipientEmail: testNotificationEmail },
+                          });
+                        }}
+                        className={styles.formInput}
+                        style={{ flex: 1, minWidth: 260 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSendTestNotification}
+                        disabled={isTestingNotification || !testNotificationEmail.trim()}
+                        className={styles.btnSecondary}
+                        style={{ fontSize: 13 }}
+                      >
+                        <Send size={14} />
+                        <span>{isTestingNotification ? 'Enviando...' : 'Enviar e-mail de teste'}</span>
+                      </button>
+                    </div>
+                    {testNotificationStatus && (
+                      <p
+                        style={{
+                          margin: '6px 0 0 0',
+                          fontSize: 12.5,
+                          fontWeight: 600,
+                          color: testNotificationStatus.includes('sucesso') ? '#166534' : '#DC2626',
+                        }}
+                      >
+                        {testNotificationStatus}
+                      </p>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+                    <div className={styles.settingRow}>
+                      <span className={styles.settingLabel}>Intervalo de Verificação (minutos):</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={60}
+                        value={emailSettings?.notifications?.checkIntervalMinutes ?? 2}
+                        onChange={(e) => {
+                          if (!emailSettings) return;
+                          const val = parseInt(e.target.value, 10) || 2;
+                          setEmailSettings({
+                            ...emailSettings,
+                            notifications: { ...emailSettings.notifications, checkIntervalMinutes: val },
+                          });
+                        }}
+                        onBlur={() => {
+                          if (!emailSettings) return;
+                          handleSaveSettings({ notifications: emailSettings.notifications });
+                        }}
+                        className={styles.formInput}
+                        style={{ maxWidth: 120 }}
+                      />
+                      <span className={styles.settingDesc}>Executado em segundo plano no servidor Node.js.</span>
+                    </div>
+
+                    <div className={styles.settingRow}>
+                      <span className={styles.settingLabel}>Status do Monitor Server-Side:</span>
+                      <span style={{ fontSize: 12.5, color: '#334155' }}>
+                        Última checagem:{' '}
+                        {emailSettings?.notifications?.lastCheckAt
+                          ? new Date(emailSettings.notifications.lastCheckAt).toLocaleTimeString('pt-BR')
+                          : 'Pendente'}
+                      </span>
+                      <span className={styles.settingDesc}>
+                        UIDs gravados p/ prevenir duplicatas: {emailSettings?.notifications?.notifiedUids?.length || 0}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Histórico / Auditoria de Notificações */}
+                  <div style={{ marginTop: 12, paddingTop: 16, borderTop: '1px solid #E2E8F0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
+                        Registro de Notificações Enviadas (Auditoria do Servidor):
+                      </span>
+                      <button
+                        type="button"
+                        onClick={loadEmailSettings}
+                        className={styles.btnSecondary}
+                        style={{ padding: '3px 8px', fontSize: 11 }}
+                        title="Atualizar registro"
+                      >
+                        <RefreshCw size={12} /> Atualizar
+                      </button>
+                    </div>
+
+                    {(!emailSettings?.notifications?.logs || emailSettings.notifications.logs.length === 0) ? (
+                      <p style={{ margin: 0, fontSize: 12.5, color: '#64748B', fontStyle: 'italic' }}>
+                        Nenhuma notificação registrada ainda. O histórico será listado automaticamente conforme o servidor disparar alertas.
+                      </p>
+                    ) : (
+                      <div style={{ overflowX: 'auto', border: '1px solid #E2E8F0', borderRadius: 6 }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                          <thead>
+                            <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', textAlign: 'left' }}>
+                              <th style={{ padding: '8px 10px', color: '#475569' }}>Data/Hora</th>
+                              <th style={{ padding: '8px 10px', color: '#475569' }}>Destinatário</th>
+                              <th style={{ padding: '8px 10px', color: '#475569' }}>UID / ID Mensagem</th>
+                              <th style={{ padding: '8px 10px', color: '#475569' }}>Assunto</th>
+                              <th style={{ padding: '8px 10px', color: '#475569' }}>Resultado</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {emailSettings.notifications.logs.slice(0, 15).map((log) => (
+                              <tr key={log.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                                <td style={{ padding: '8px 10px', whiteSpace: 'nowrap', color: '#64748B' }}>
+                                  {new Date(log.sentAt).toLocaleString('pt-BR')}
+                                </td>
+                                <td style={{ padding: '8px 10px', fontWeight: 500, color: '#0F172A' }}>
+                                  {log.recipientEmail}
+                                </td>
+                                <td style={{ padding: '8px 10px', fontFamily: 'monospace', fontSize: 11, color: '#64748B' }}>
+                                  {log.uid ? `UID: ${log.uid}` : (log.messageId || '-')}
+                                </td>
+                                <td style={{ padding: '8px 10px', color: '#334155', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  {log.subject}
+                                </td>
+                                <td style={{ padding: '8px 10px' }}>
+                                  {log.status === 'success' ? (
+                                    <span style={{ color: '#166534', fontWeight: 600, background: '#DCFCE7', padding: '2px 6px', borderRadius: 4, fontSize: 11 }}>
+                                      ✓ Enviado
+                                    </span>
+                                  ) : (
+                                    <span style={{ color: '#991B1B', fontWeight: 600, background: '#FEE2E2', padding: '2px 6px', borderRadius: 4, fontSize: 11 }} title={log.error}>
+                                      ✕ Falhou: {log.error?.slice(0, 30)}
+                                    </span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. ANEXOS */}
+              <div className={styles.settingsCard}>
+                <div className={styles.settingsCardHeader}>
+                  <div className={styles.settingsCardTitle}>
+                    <Paperclip size={17} color="#008744" />
+                    <span>Configuração de Anexos</span>
+                  </div>
+                </div>
+                <div className={styles.formGrid}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+                    <div className={styles.settingRow}>
+                      <span className={styles.settingLabel}>Tamanho Máximo por Arquivo:</span>
+                      <span className={styles.formInputReadonly}>10 MB</span>
+                    </div>
+                    <div className={styles.settingRow}>
+                      <span className={styles.settingLabel}>Tamanho Máximo Total:</span>
+                      <span className={styles.formInputReadonly}>25 MB</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.settingRow}>
+                    <span className={styles.settingLabel}>Tipos de Arquivos Permitidos:</span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                      {['PDF', 'DOC', 'DOCX', 'XLS', 'XLSX', 'PPT', 'PPTX', 'JPG', 'JPEG', 'PNG', 'WEBP', 'ZIP'].map((ext) => (
+                        <span
+                          key={ext}
+                          style={{
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            padding: '3px 8px',
+                            borderRadius: 4,
+                            background: '#F1F5F9',
+                            color: '#334155',
+                            border: '1px solid #CBD5E1',
+                          }}
+                        >
+                          .{ext.toLowerCase()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: 12 }}>
+                    <p style={{ margin: 0, fontSize: 12, color: '#991B1B', lineHeight: 1.5 }}>
+                      <strong>Proteção ativa contra arquivos executáveis:</strong> Arquivos com formatos executáveis ou perigosos (.exe, .bat, .cmd, .ps1, .scr, .msi, .com, .vbs, .js, .sh, etc.) e tentativas de injeção ou path traversal são terminantemente bloqueados pelo sistema tanto no navegador quanto na validação de servidor.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : activeFolder === 'campaigns' ? (
             <div className={styles.campaignsPane}>
               <div className={styles.campaignsHeader}>
                 <h2 className={styles.campaignsTitle}>Campanhas de E-mail para Clientes</h2>
@@ -1272,6 +1979,63 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
                 onChange={(e) => setComposeBody(e.target.value)}
                 className={styles.formTextarea}
               />
+
+              {/* Anexos */}
+              <div className={styles.composeAttachmentsArea}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => composeFileInputRef.current?.click()}
+                    className={styles.btnSecondary}
+                    style={{ fontSize: 13, padding: '6px 12px' }}
+                  >
+                    <Paperclip size={14} /> Adicionar anexo
+                  </button>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>
+                    Máx: 10 MB / arquivo (PDF, DOC, XLS, imagens, ZIP)
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  multiple
+                  ref={composeFileInputRef}
+                  onChange={handleAddAttachments}
+                  style={{ display: 'none' }}
+                />
+
+                {composeAttachments.length > 0 && (
+                  <div className={styles.composeAttachmentChips}>
+                    {composeAttachments.map((file, idx) => (
+                      <span key={idx} className={styles.composeAttachmentChip}>
+                        <Paperclip size={13} style={{ color: '#008744' }} />
+                        <span>{file.name}</span>
+                        <span className={styles.composeAttachmentChipSize}>
+                          ({file.size >= 1024 * 1024
+                            ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+                            : `${Math.round(file.size / 1024)} KB`})
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveAttachment(idx)}
+                          className={styles.removeAttachmentBtn}
+                          title="Remover anexo"
+                        >
+                          <X size={13} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Prévia da assinatura no compositor se ativa */}
+              {emailSettings?.signature?.enabled && emailSettings.signature.imageUrl && (
+                <div style={{ marginTop: 12, padding: 10, background: '#F8FAFC', borderRadius: 6, border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Imagem da assinatura configurada:</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={emailSettings.signature.imageUrl} alt="Assinatura" style={{ maxHeight: 42, maxWidth: 140, objectFit: 'contain' }} />
+                </div>
+              )}
             </div>
 
             <div className={styles.modalFooter}>

@@ -16,15 +16,17 @@
 
 /* ── Logo area ── */
 .logoArea {
-  padding: 20px 20px 18px;
+  padding: 22px 18px 20px;
   border-bottom: 1px solid #F1F5F9;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .logoImg {
-  height: 40px;
+  height: 64px;
   width: auto;
+  max-width: 100%;
   object-fit: contain;
   /* Invert white-on-dark SVG logo to dark-on-light */
   filter: brightness(0);

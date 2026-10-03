@@ -1,17 +1,19 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { getCategories, getProducts, getClients, getVideos, getReviews } from '@/lib/db';
+import { getSettings, getCategories, getProducts, getClients, getVideos, getReviews } from '@/lib/db';
 import { HeroSection } from '@/components/public/HeroSection';
 import { ClientGrid } from '@/components/public/ClientGrid';
 import { CategoryCard } from '@/components/public/CategoryCard';
 import { VideoLaunchesSection } from '@/components/public/VideoLaunchesSection';
 import { ReviewsSection } from '@/components/public/ReviewsSection';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [categories, products, clients, videos, reviews] = await Promise.all([
+  const [settings, categories, products, clients, videos, reviews] = await Promise.all([
+    getSettings(),
     getCategories({ isActive: true }),
     getProducts({ isActive: true, sortBy: 'order' }),
     getClients({ isActive: true }),
@@ -21,8 +23,8 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* 1. Hero (con la única fila de benefícios integrada) */}
-      <HeroSection />
+      {/* 1. Hero (con imagen configurada dinámicamente) */}
+      <HeroSection heroImage={settings.heroImage} />
 
       {/* 2. Parceiros e Clientes (Quem confia na TECH7) */}
       <ClientGrid clients={clients} />

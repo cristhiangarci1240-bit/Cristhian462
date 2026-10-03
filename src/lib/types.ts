@@ -38,6 +38,23 @@ export interface Product {
   inquiriesCount: number;
   createdAt: string;
   updatedAt: string;
+
+  // Marketplace & Identification (Optional)
+  gtin?: string;
+  marketplace?: string;
+  sourceUrl?: string;
+  sourceProductId?: string;
+  asin?: string;
+
+  // Price Control (Controle de Preço - Optional)
+  costPrice?: number;          // Preço de compra
+  sourcePrice?: number;        // Preço atual da fonte
+  sellingPrice?: number;       // Preço de venda
+  minMarginPercent?: number;   // Margem mínima (%)
+  targetMarginPercent?: number;// Margem desejada (%)
+  maxPurchasePrice?: number;   // Preço máximo de compra
+  minSellingPrice?: number;    // Preço mínimo de venda
+  currency?: string;           // Moeda (BRL)
 }
 
 export interface Client {

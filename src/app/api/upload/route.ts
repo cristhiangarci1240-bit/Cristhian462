@@ -29,6 +29,7 @@ const ALLOWED_FOLDERS = [
   'branding',
   'marca',
   'thumbnails',
+  'email',
 ];
 
 // Dangerous file extensions that must NEVER be written to the server

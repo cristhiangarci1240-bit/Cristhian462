@@ -121,9 +121,16 @@ export async function listMessages(options: {
       const isRead = flags.includes('\\Seen');
       const hasAttachments = hasStructAttachments(item.attributes.struct);
 
+      const rawMsgId = header['message-id'] || header['Message-ID'] || header['Message-Id'];
+      const messageId = Array.isArray(rawMsgId)
+        ? rawMsgId[0]
+        : typeof rawMsgId === 'string'
+        ? rawMsgId
+        : undefined;
+
       return {
         uid: item.attributes.uid,
-        messageId: Array.isArray(header['message-id']) ? header['message-id'][0] : undefined,
+        messageId,
         subject: decodeHeaderValue(subject),
         from: displayName || fromEmail,
         fromEmail,

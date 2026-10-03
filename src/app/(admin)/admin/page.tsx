@@ -68,7 +68,7 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
 
-        <Link href="/admin/produtos/novo" className="btn btn-primary btn-sm">
+        <Link href="/admin/produtos?novo=1" className="btn btn-primary btn-sm">
           <span>+ Adicionar produto</span>
         </Link>
       </div>

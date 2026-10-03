@@ -1,9 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Search, Edit2, Trash2, CheckCircle2, XCircle, ArrowUpDown, ExternalLink } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+  ExternalLink,
+  Globe,
+} from 'lucide-react';
 import { Product, Category } from '@/lib/types';
+import { ImportProductModal } from '@/components/admin/ImportProductModal';
+import { AddProductMethodModal } from '@/components/admin/AddProductMethodModal';
 
 interface ProdutosListClientProps {
   initialProducts: Product[];
@@ -11,14 +23,32 @@ interface ProdutosListClientProps {
 }
 
 export function ProdutosListClient({ initialProducts, categories }: ProdutosListClientProps) {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState('');
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isMethodModalOpen, setIsMethodModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('novo') === '1' || params.get('novo') === 'true') {
+        setIsMethodModalOpen(true);
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, []);
 
   const getCategoryName = (catId: string) => {
     const cat = categories.find((c) => c.id === catId);
     return cat ? cat.name : 'Não definida';
+  };
+
+  const handleProductImported = (newProduct: Product) => {
+    setProducts((prev) => [newProduct, ...prev]);
   };
 
   const handleToggleActive = async (product: Product) => {
@@ -63,7 +93,8 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
       !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.sku.toLowerCase().includes(search.toLowerCase()) ||
-      p.brand.toLowerCase().includes(search.toLowerCase());
+      p.brand.toLowerCase().includes(search.toLowerCase()) ||
+      (p.gtin && p.gtin.toLowerCase().includes(search.toLowerCase()));
 
     const matchesCat = !selectedCat || p.categoryId === selectedCat;
 
@@ -73,7 +104,16 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
   return (
     <div>
       {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '28px',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: 800 }}>Gestão de Produtos</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>
@@ -81,10 +121,28 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
           </p>
         </div>
 
-        <Link href="/admin/produtos/novo" className="btn btn-primary" id="btn-add-product">
-          <Plus size={16} />
-          <span>Adicionar produto</span>
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            type="button"
+            onClick={() => setIsImportModalOpen(true)}
+            className="btn btn-secondary"
+            id="btn-open-import-modal"
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
+            <Globe size={16} style={{ color: '#2563EB' }} />
+            <span>Importar produto por URL</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsMethodModalOpen(true)}
+            className="btn btn-primary"
+            id="btn-add-product"
+          >
+            <Plus size={16} />
+            <span>Adicionar produto</span>
+          </button>
+        </div>
       </div>
 
       {/* Filtros da Tabela */}
@@ -104,7 +162,7 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '13px', color: 'var(--text-muted)' }} />
           <input
             type="text"
-            placeholder="Pesquisar por nome, SKU ou marca..."
+            placeholder="Pesquisar por nome, SKU, GTIN ou marca..."
             className="form-input"
             style={{ paddingLeft: '36px' }}
             value={search}
@@ -112,7 +170,7 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
           />
         </div>
 
-        <div style={{ width: '220px' }}>
+        <div style={{ minWidth: '200px' }}>
           <select
             className="form-select"
             value={selectedCat}
@@ -145,6 +203,7 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
                 <th style={{ padding: '14px 18px' }}>Nome & SKU</th>
                 <th style={{ padding: '14px 18px' }}>Categoria</th>
                 <th style={{ padding: '14px 18px' }}>Marca / Modelo</th>
+                <th style={{ padding: '14px 18px', textAlign: 'center' }}>Preço Venda</th>
                 <th style={{ padding: '14px 18px', textAlign: 'center' }}>Status</th>
                 <th style={{ padding: '14px 18px', textAlign: 'center' }}>Consultas</th>
                 <th style={{ padding: '14px 18px', textAlign: 'right' }}>Ações</th>
@@ -187,8 +246,29 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
                       <div style={{ fontWeight: 700, color: '#0F172A', marginBottom: '3px' }}>
                         {prod.name}
                       </div>
-                      <div style={{ fontSize: '11.5px', fontFamily: 'var(--font-mono)', color: 'var(--brand-primary)' }}>
-                        SKU: {prod.sku}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '11.5px', fontFamily: 'var(--font-mono)', color: 'var(--brand-primary)' }}>
+                          SKU: {prod.sku}
+                        </span>
+                        {prod.marketplace && (
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              padding: '1px 5px',
+                              borderRadius: '3px',
+                              fontWeight: 700,
+                              backgroundColor: prod.marketplace === 'mercadolivre' ? '#FEF08A' : '#FED7AA',
+                              color: prod.marketplace === 'mercadolivre' ? '#854D0E' : '#9A3412',
+                            }}
+                          >
+                            {prod.marketplace === 'mercadolivre' ? 'ML' : 'Amazon'}
+                          </span>
+                        )}
+                        {prod.gtin && (
+                          <span style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>
+                            EAN: {prod.gtin}
+                          </span>
+                        )}
                       </div>
                     </td>
 
@@ -199,6 +279,16 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
                     <td style={{ padding: '12px 18px', color: 'var(--text-secondary)' }}>
                       <div>{prod.brand}</div>
                       {prod.model && <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{prod.model}</div>}
+                    </td>
+
+                    <td style={{ padding: '12px 18px', textAlign: 'center', fontWeight: 600 }}>
+                      {prod.sellingPrice !== undefined ? (
+                        <span style={{ color: '#059669' }}>
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: prod.currency || 'BRL' }).format(prod.sellingPrice)}
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Sob consulta</span>
+                      )}
                     </td>
 
                     <td style={{ padding: '12px 18px', textAlign: 'center' }}>
@@ -272,7 +362,7 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <td colSpan={8} style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
                     Nenhum produto cadastrado com os critérios informados.
                   </td>
                 </tr>
@@ -281,6 +371,28 @@ export function ProdutosListClient({ initialProducts, categories }: ProdutosList
           </table>
         </div>
       </div>
+
+      {/* Modal de Seleção de Método para Adicionar Produto */}
+      <AddProductMethodModal
+        isOpen={isMethodModalOpen}
+        onClose={() => setIsMethodModalOpen(false)}
+        onSelectManual={() => {
+          setIsMethodModalOpen(false);
+          router.push('/admin/produtos/novo');
+        }}
+        onSelectAI={() => {
+          setIsMethodModalOpen(false);
+          setIsImportModalOpen(true);
+        }}
+      />
+
+      {/* Modal de Importação por URL */}
+      <ImportProductModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        categories={categories}
+        onProductImported={handleProductImported}
+      />
     </div>
   );
 }

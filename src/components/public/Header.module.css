@@ -25,9 +25,9 @@
 }
 
 .logoImg {
-  width: 200px;
+  width: 255px;
   height: auto;
-  max-height: 56px;
+  max-height: 66px;
   object-fit: contain;
   display: block;
 }
@@ -188,7 +188,8 @@
 
 @media (max-width: 1020px) {
   .logoImg {
-    width: 170px;
+    width: 215px;
+    max-height: 58px;
   }
 
   .whatsappBtn span {
@@ -253,7 +254,8 @@
 
 @media (max-width: 480px) {
   .logoImg {
-    width: 140px;
+    width: 175px;
+    max-height: 50px;
   }
 
   .whatsappBtn span {
