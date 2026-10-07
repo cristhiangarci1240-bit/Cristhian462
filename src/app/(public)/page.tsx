@@ -7,6 +7,11 @@ import { ClientGrid } from '@/components/public/ClientGrid';
 import { CategoryCard } from '@/components/public/CategoryCard';
 import { VideoLaunchesSection } from '@/components/public/VideoLaunchesSection';
 import { ReviewsSection } from '@/components/public/ReviewsSection';
+import {
+  DEFAULT_PARTNERS_TITLE,
+  DEFAULT_PARTNERS_TITLE_ACCENT,
+  DEFAULT_PARTNERS_SUBTITLE,
+} from '@/lib/partners';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -95,6 +100,25 @@ export default async function HomePage() {
 
       {/* 5. Avaliações de Clientes (Social Proof) */}
       <ReviewsSection reviews={reviews} />
+
+      {/* 6. Empresas com quem trabalhamos (Marcas parceiras) */}
+      <ClientGrid
+        clients={(settings.partners ?? []).map((p, i) => ({
+          id: `partner_${i}`,
+          name: p.name,
+          logo: p.logo,
+          website: p.website,
+          isActive: true,
+          order: i,
+          createdAt: '',
+          updatedAt: '',
+        }))}
+        title={settings.partnersTitle || DEFAULT_PARTNERS_TITLE}
+        titleAccent={settings.partnersTitleAccent || DEFAULT_PARTNERS_TITLE_ACCENT}
+        subtitle={settings.partnersSubtitle || DEFAULT_PARTNERS_SUBTITLE}
+        ariaLabel="Empresas com quem trabalhamos"
+        direction="left"
+      />
     </div>
   );
 }

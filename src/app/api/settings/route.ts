@@ -63,6 +63,9 @@ export async function PUT(request: Request) {
       'address',
       'linkedinUrl',
       'instagramUrl',
+      'partnersTitle',
+      'partnersTitleAccent',
+      'partnersSubtitle',
     ];
 
     for (const key of allowedFields) {
@@ -71,6 +74,18 @@ export async function PUT(request: Request) {
           safePayload[key] = body[key].slice(0, 1000).trim();
         }
       }
+    }
+
+    // Logos do carrossel "Empresas com quem trabalhamos"
+    if (Array.isArray(body.partners)) {
+      safePayload.partners = body.partners
+        .filter((p: any) => p && typeof p.name === 'string' && p.name.trim())
+        .slice(0, 50)
+        .map((p: any) => ({
+          name: p.name.slice(0, 120).trim(),
+          logo: typeof p.logo === 'string' ? p.logo.slice(0, 1000).trim() : '',
+          website: typeof p.website === 'string' && p.website.trim() ? p.website.slice(0, 1000).trim() : undefined,
+        }));
     }
 
     const updated = await updateSettings(safePayload);

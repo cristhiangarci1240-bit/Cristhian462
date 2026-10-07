@@ -13,8 +13,19 @@ import {
   RotateCcw,
   Image as ImageIcon,
   ShieldCheck,
+  Handshake,
+  Plus,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
-import { SiteSettings } from '@/lib/types';
+import { SiteSettings, PartnerLogo } from '@/lib/types';
+import {
+  DEFAULT_PARTNERS,
+  DEFAULT_PARTNERS_TITLE,
+  DEFAULT_PARTNERS_TITLE_ACCENT,
+  DEFAULT_PARTNERS_SUBTITLE,
+} from '@/lib/partners';
 import { useBrand } from '@/components/BrandProvider';
 
 interface ConfiguracaoClientProps {
@@ -30,6 +41,17 @@ export function ConfiguracaoClient({ initialSettings }: ConfiguracaoClientProps)
   const [linkedinUrl, setLinkedinUrl] = useState(initialSettings.linkedinUrl || '');
   const [instagramUrl, setInstagramUrl] = useState(initialSettings.instagramUrl || '');
   const [loginLogoUrl, setLoginLogoUrl] = useState(initialSettings.loginLogoUrl || '');
+
+  // Carrossel "Empresas com quem trabalhamos"
+  const [partnersTitle, setPartnersTitle] = useState(initialSettings.partnersTitle || DEFAULT_PARTNERS_TITLE);
+  const [partnersTitleAccent, setPartnersTitleAccent] = useState(
+    initialSettings.partnersTitleAccent || DEFAULT_PARTNERS_TITLE_ACCENT
+  );
+  const [partnersSubtitle, setPartnersSubtitle] = useState(initialSettings.partnersSubtitle || DEFAULT_PARTNERS_SUBTITLE);
+  const [partners, setPartners] = useState<PartnerLogo[]>(
+    initialSettings.partners && initialSettings.partners.length > 0 ? initialSettings.partners : DEFAULT_PARTNERS
+  );
+  const [uploadingPartnerIdx, setUploadingPartnerIdx] = useState<number | null>(null);
 
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -83,6 +105,59 @@ export function ConfiguracaoClient({ initialSettings }: ConfiguracaoClientProps)
     setLoginLogoUrl('');
   };
 
+  const updatePartner = (idx: number, patch: Partial<PartnerLogo>) => {
+    setPartners((list) => list.map((p, i) => (i === idx ? { ...p, ...patch } : p)));
+  };
+
+  const removePartner = (idx: number) => {
+    setPartners((list) => list.filter((_, i) => i !== idx));
+  };
+
+  const movePartner = (idx: number, delta: number) => {
+    setPartners((list) => {
+      const target = idx + delta;
+      if (target < 0 || target >= list.length) return list;
+      const next = [...list];
+      [next[idx], next[target]] = [next[target], next[idx]];
+      return next;
+    });
+  };
+
+  const handlePartnerLogoUpload = async (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type.toLowerCase())) {
+      alert('Formato de arquivo inválido. Permitido: PNG, JPG/JPEG, WEBP e SVG.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('O tamanho do arquivo excede o limite máximo permitido de 5MB.');
+      return;
+    }
+
+    setUploadingPartnerIdx(idx);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'branding');
+
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        updatePartner(idx, { logo: data.url });
+      } else {
+        alert(data.error || 'Erro no envio do logo.');
+      }
+    } catch {
+      alert('Erro de conexão ao enviar o arquivo de logo.');
+    } finally {
+      setUploadingPartnerIdx(null);
+      e.target.value = '';
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -99,6 +174,10 @@ export function ConfiguracaoClient({ initialSettings }: ConfiguracaoClientProps)
           linkedinUrl,
           instagramUrl,
           loginLogoUrl,
+          partnersTitle,
+          partnersTitleAccent,
+          partnersSubtitle,
+          partners: partners.filter((p) => p.name.trim()),
         }),
       });
 
@@ -367,6 +446,179 @@ export function ConfiguracaoClient({ initialSettings }: ConfiguracaoClientProps)
               onChange={(e) => setInstagramUrl(e.target.value)}
             />
           </div>
+        </div>
+
+        {/* Carrossel: Empresas com quem trabalhamos */}
+        <div
+          style={{
+            backgroundColor: 'var(--brand-surface-card)',
+            border: '1px solid var(--brand-border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '28px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+            <Handshake size={20} color="var(--brand-primary)" />
+            <h3 style={{ fontSize: '17px', fontWeight: 700, margin: 0 }}>
+              Carrossel &ldquo;Empresas com quem trabalhamos&rdquo;
+            </h3>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '22px' }}>
+            Logos exibidos na página inicial, abaixo de &ldquo;O que nossos clientes dizem&rdquo;.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="form-group">
+              <label className="form-label">Título</label>
+              <input
+                type="text"
+                className="form-input"
+                value={partnersTitle}
+                onChange={(e) => setPartnersTitle(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Título em destaque (verde)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={partnersTitleAccent}
+                onChange={(e) => setPartnersTitleAccent(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Subtítulo</label>
+            <input
+              type="text"
+              className="form-input"
+              value={partnersSubtitle}
+              onChange={(e) => setPartnersSubtitle(e.target.value)}
+            />
+          </div>
+
+          <label className="form-label">Empresas ({partners.length})</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {partners.map((partner, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  flexWrap: 'wrap',
+                  padding: '12px',
+                  border: '1px solid var(--brand-border)',
+                  borderRadius: 'var(--radius-sm)',
+                }}
+              >
+                <div
+                  style={{
+                    width: '96px',
+                    height: '52px',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: 'var(--radius-sm)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '6px',
+                    flexShrink: 0,
+                  }}
+                >
+                  {partner.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={partner.logo}
+                      alt={partner.name}
+                      style={{ maxWidth: '84px', maxHeight: '40px', objectFit: 'contain' }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '10px', color: '#94A3B8' }}>Sem logo</span>
+                  )}
+                </div>
+
+                <div style={{ flex: 1, minWidth: '180px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Nome da empresa"
+                    value={partner.name}
+                    onChange={(e) => updatePartner(idx, { name: e.target.value })}
+                  />
+                  <input
+                    type="url"
+                    className="form-input"
+                    placeholder="Site (opcional)"
+                    value={partner.website || ''}
+                    onChange={(e) => updatePartner(idx, { website: e.target.value })}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <label
+                    className="btn btn-secondary btn-sm"
+                    style={{ cursor: uploadingPartnerIdx === idx ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    title="Enviar logo"
+                  >
+                    <Upload size={14} />
+                    <span>{uploadingPartnerIdx === idx ? 'Enviando...' : 'Logo'}</span>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      onChange={(e) => handlePartnerLogoUpload(idx, e)}
+                      disabled={uploadingPartnerIdx !== null}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => movePartner(idx, -1)}
+                    disabled={idx === 0}
+                    title="Mover para cima"
+                    aria-label="Mover para cima"
+                  >
+                    <ArrowUp size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => movePartner(idx, 1)}
+                    disabled={idx === partners.length - 1}
+                    title="Mover para baixo"
+                    aria-label="Mover para baixo"
+                  >
+                    <ArrowDown size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => removePartner(idx)}
+                    style={{ color: '#DC2626', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                    title="Remover"
+                    aria-label="Remover empresa"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => setPartners((list) => [...list, { name: '', logo: '' }])}
+            style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Plus size={14} />
+            <span>Adicionar empresa</span>
+          </button>
+          <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '10px' }}>
+            Clique em &ldquo;Salvar Dados&rdquo; no topo da página para publicar as alterações.
+          </p>
         </div>
       </div>
     </form>

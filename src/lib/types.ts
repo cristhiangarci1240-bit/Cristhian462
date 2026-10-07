@@ -98,7 +98,17 @@ export interface SiteSettings {
   address: string;
   linkedinUrl?: string;
   instagramUrl?: string;
+  partnersTitle?: string;
+  partnersTitleAccent?: string;
+  partnersSubtitle?: string;
+  partners?: PartnerLogo[];
   updatedAt: string;
+}
+
+export interface PartnerLogo {
+  name: string;
+  logo: string;
+  website?: string;
 }
 
 export interface Video {

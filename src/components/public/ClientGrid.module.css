@@ -95,6 +95,16 @@
   100% { transform: translateX(0%);       }
 }
 
+/* Variant: scroll LEFT (used by the second carousel) */
+.marqueeLeft {
+  animation-name: marqueeLeft;
+}
+
+@keyframes marqueeLeft {
+  0%   { transform: translateX(0%);       }
+  100% { transform: translateX(-33.333%); }
+}
+
 /* Individual logo slot */
 .logoItem {
   display: flex;
