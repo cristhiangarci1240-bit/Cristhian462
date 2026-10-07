@@ -1,4 +1,5 @@
 import type { ImportedProduct, MarketplaceAdapter } from '../types';
+import { meliFetch } from './client';
 
 export class MercadoLivreAdapter implements MarketplaceAdapter {
   readonly marketplace = 'mercadolivre' as const;
@@ -63,14 +64,13 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
       throw new Error('Não foi possível identificar o código do produto (MLB) na URL informada.');
     }
 
+    // Catalog pages (/p/MLB...) point to a catalog product, not a listing
+    if (/\/p\/MLB-?\d+/i.test(url)) {
+      return this.fetchCatalogProduct(itemId, url);
+    }
+
     // 1. Fetch item core data from official Mercado Libre API
-    const itemUrl = `https://api.mercadolibre.com/items/${itemId}`;
-    const itemRes = await fetch(itemUrl, {
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'TECH7-Electronics-Importer/1.0',
-      },
-    });
+    const itemRes = await meliFetch(`/items/${itemId}`);
 
     if (!itemRes.ok) {
       // If /items/ 404s, try catalog /products/ endpoint
@@ -85,12 +85,7 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
     // 2. Fetch description from official endpoint
     let descriptionText = '';
     try {
-      const descRes = await fetch(`https://api.mercadolibre.com/items/${itemId}/description`, {
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': 'TECH7-Electronics-Importer/1.0',
-        },
-      });
+      const descRes = await meliFetch(`/items/${itemId}/description`);
       if (descRes.ok) {
         const descData = await descRes.json();
         descriptionText = descData.plain_text || descData.text || '';
@@ -188,13 +183,7 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
    * Fallback for catalog products (/p/MLB...)
    */
   private async fetchCatalogProduct(productId: string, originalUrl: string): Promise<ImportedProduct> {
-    const catalogUrl = `https://api.mercadolibre.com/products/${productId}`;
-    const res = await fetch(catalogUrl, {
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'TECH7-Electronics-Importer/1.0',
-      },
-    });
+    const res = await meliFetch(`/products/${productId}`);
 
     if (!res.ok) {
       throw new Error('Produto não encontrado na API oficial do Mercado Livre.');
@@ -223,7 +212,26 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
       }
     }
 
-    const images: string[] = (product.pictures || []).map((p: any) => p.url).filter(Boolean);
+    const images: string[] = (product.pictures || []).map((p: any) => p.secure_url || p.url).filter(Boolean);
+
+    // buy_box_winner is often missing; fall back to the lowest-priced listing of this catalog product
+    let price: number | undefined =
+      typeof product.buy_box_winner?.price === 'number' ? product.buy_box_winner.price : undefined;
+    if (price === undefined) {
+      try {
+        const itemsRes = await meliFetch(`/products/${productId}/items`);
+        if (itemsRes.ok) {
+          const listings: Array<{ price?: number }> = (await itemsRes.json()).results || [];
+          const prices = listings.map((l) => l.price).filter((p): p is number => typeof p === 'number');
+          if (prices.length > 0) price = Math.min(...prices);
+        }
+      } catch {
+        // Price is optional; the user can fill it in manually
+      }
+    }
+
+    const description =
+      product.short_description?.content || product.description || product.name || '';
 
     return {
       marketplace: 'mercadolivre',
@@ -234,12 +242,12 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
       model,
       sku: productId,
       gtin: gtin || undefined,
-      description: product.description || product.name || '',
+      description,
       shortDescription: product.name || '',
       images,
       features: [product.name],
       specifications,
-      price: typeof product.buy_box_winner?.price === 'number' ? product.buy_box_winner.price : undefined,
+      price,
       currency: product.buy_box_winner?.currency_id || 'BRL',
       availability: 'in_stock',
       seller: 'Mercado Livre',

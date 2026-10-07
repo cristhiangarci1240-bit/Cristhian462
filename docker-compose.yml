@@ -31,6 +31,10 @@ services:
       - MAIL_SMTP_PORT=${MAIL_SMTP_PORT:-465}
       - MAIL_SMTP_SECURE=${MAIL_SMTP_SECURE:-true}
 
+      # Mercado Livre API (product import by link) — app from developers.mercadolivre.com.br
+      - MELI_CLIENT_ID=${MELI_CLIENT_ID:-}
+      - MELI_CLIENT_SECRET=${MELI_CLIENT_SECRET:-}
+
     volumes:
       # Persistent JSON Database (database.json, email_data.json, backups)
       - ./data:/app/data
