@@ -8,6 +8,10 @@ const nextConfig = {
   experimental: {
     instrumentationHook: true,
   },
+  // Files uploaded after `next start` are not served from public/, so route them through the API
+  async rewrites() {
+    return [{ source: '/uploads/:path*', destination: '/api/uploads/:path*' }];
+  },
   async headers() {
     return [
       {
