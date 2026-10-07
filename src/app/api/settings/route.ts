@@ -4,6 +4,8 @@ import { verifyToken, AUTH_COOKIE_NAME, isUserAdmin } from '@/lib/auth';
 import { logSecurityEvent, getClientIp } from '@/lib/security';
 import { cookies } from 'next/headers';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const settings = await getSettings();
   return NextResponse.json(settings);
