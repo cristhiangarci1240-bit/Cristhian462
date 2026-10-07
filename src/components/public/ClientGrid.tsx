@@ -40,7 +40,6 @@ export function ClientGrid({ clients }: ClientGridProps) {
     <section className={styles.section} aria-label="Parceiros e clientes">
       <div className="container">
         <div className={styles.header}>
-          <p className={styles.eyebrow}>PARCEIROS E CLIENTES</p>
           <h2 className={styles.title}>
             Quem confia na <span className={styles.titleAccent}>TECH7</span>
           </h2>
