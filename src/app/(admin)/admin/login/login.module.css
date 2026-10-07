@@ -1,6 +1,6 @@
 /* =============================================
    TECH7 — Admin Login Page
-   Clean, light corporate design
+   Dark corporate design so the white/green logo stands out
    ============================================= */
 
 .container {
@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
   padding: 32px 24px;
-  background-color: #F1F5F9;
+  background-color: #000000;
   position: relative;
 }
 
@@ -188,4 +188,57 @@
   .loginCard {
     padding: 36px 24px;
   }
+}
+
+/* ── Dark theme overrides ── */
+.loginCard {
+  background-color: #0B0F14;
+  border-color: #1F2937;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* The default logo is already white-on-dark, so no inversion is needed */
+.defaultLogo {
+  filter: none;
+}
+
+.title {
+  color: #FFFFFF;
+}
+
+.subtitle {
+  color: #94A3B8;
+}
+
+.loginCard :global(.form-label) {
+  color: #CBD5E1;
+}
+
+.loginCard :global(.form-input) {
+  background-color: #111827;
+  border-color: #374151;
+  color: #F8FAFC;
+}
+
+.loginCard :global(.form-input)::placeholder {
+  color: #6B7280;
+}
+
+.loginCard :global(.form-input):-webkit-autofill {
+  -webkit-text-fill-color: #F8FAFC;
+  -webkit-box-shadow: 0 0 0 1000px #111827 inset;
+}
+
+.alertError {
+  background-color: rgba(185, 28, 28, 0.15);
+  border-color: rgba(248, 113, 113, 0.4);
+  color: #FCA5A5;
+}
+
+.backLink {
+  color: #6B7280;
+}
+
+.backLink:hover {
+  color: #FFFFFF;
 }
