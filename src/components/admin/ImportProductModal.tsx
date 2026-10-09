@@ -431,7 +431,7 @@ export function ImportProductModal({
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span
                   className={`${styles.badge} ${
                     imported.marketplace === 'mercadolivre' ? styles.mlBadge : styles.amazonBadge

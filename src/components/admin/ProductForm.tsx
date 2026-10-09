@@ -903,7 +903,7 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
               {specsList.map((spec, idx) => (
                 <div
                   key={idx}
-                  style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 2fr) auto', gap: '8px' }}
+                  style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.4fr) auto', gap: '8px' }}
                 >
                   <input
                     type="text"

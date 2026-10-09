@@ -60,7 +60,7 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: 800 }}>Dashboard Corporativo</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>
@@ -77,8 +77,8 @@ export default async function AdminDashboardPage() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))',
-          gap: '20px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(150px, 100%), 1fr))',
+          gap: '16px',
           marginBottom: '36px',
         }}
       >
@@ -97,7 +97,7 @@ export default async function AdminDashboardPage() {
               transition: 'border-color var(--transition-fast)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500 }}>
                 {card.label}
               </span>
@@ -200,7 +200,7 @@ export default async function AdminDashboardPage() {
           padding: '24px',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 700 }}>
             Consultas Recentes pelo WhatsApp
           </h3>

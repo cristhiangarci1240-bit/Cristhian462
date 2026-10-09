@@ -1113,3 +1113,72 @@
   background: rgba(220, 38, 38, 0.1);
 }
 
+
+/* ── MOBILE ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .container {
+    height: auto;
+    min-height: calc(100vh - 100px);
+  }
+
+  .topBar {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .topBarLeft {
+    min-width: 0;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .accountBadge {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .searchBox {
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  .topBarActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .workspace {
+    flex-direction: column;
+  }
+
+  /* Folders become a horizontal, swipeable row of chips */
+  .folderSidebar {
+    width: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 8px;
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .folderBtn {
+    width: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .folderDivider {
+    display: none;
+  }
+
+  .contentPane {
+    min-height: 60vh;
+  }
+}

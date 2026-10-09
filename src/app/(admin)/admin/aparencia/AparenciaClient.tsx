@@ -101,7 +101,7 @@ export function AparenciaClient({ initialSettings }: AparenciaClientProps) {
   return (
     <form onSubmit={handleSave} style={{ maxWidth: '1000px' }}>
       {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: 800 }}>Aparência & Identidade Visual</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>

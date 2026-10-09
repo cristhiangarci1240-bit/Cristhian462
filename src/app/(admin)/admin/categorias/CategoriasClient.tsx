@@ -150,7 +150,7 @@ export function CategoriasClient({ initialCategories }: CategoriasClientProps) {
   return (
     <div>
       {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: 800 }}>Gestão de Categorias</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>
@@ -281,7 +281,7 @@ export function CategoriasClient({ initialCategories }: CategoriasClientProps) {
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ fontSize: '20px', fontWeight: 700 }}>
                 {editingCat ? 'Editar Categoria' : 'Nova Categoria'}
               </h2>

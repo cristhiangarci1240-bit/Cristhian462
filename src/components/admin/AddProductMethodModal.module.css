@@ -374,3 +374,24 @@
     padding: 12px 20px 16px 20px;
   }
 }
+
+/* Phones: badge goes under the text so the description gets the full width */
+@media (max-width: 640px) {
+  .optionCard {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .cardRight {
+    width: 100%;
+    padding-left: 52px;
+  }
+
+  .cardRight:not(:has(.badge)) {
+    display: none;
+  }
+
+  .arrowIcon {
+    display: none;
+  }
+}

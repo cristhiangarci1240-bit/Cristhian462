@@ -148,7 +148,7 @@ export function ClientesClient({ initialClients }: ClientesClientProps) {
   return (
     <div>
       {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: 800 }}>Empresas que Confiam em Nós</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>
@@ -198,7 +198,7 @@ export function ClientesClient({ initialClients }: ClientesClientProps) {
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-white)' }}>{cli.name}</h4>
                 <button
                   onClick={() => handleToggleActive(cli)}
@@ -233,7 +233,7 @@ export function ClientesClient({ initialClients }: ClientesClientProps) {
               )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--brand-border)', marginTop: 'auto' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--brand-border)', marginTop: 'auto' }}>
               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                 Ordem: <strong>{cli.order}</strong>
               </span>
@@ -290,7 +290,7 @@ export function ClientesClient({ initialClients }: ClientesClientProps) {
               boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ fontSize: '20px', fontWeight: 700 }}>
                 {editingClient ? 'Editar Cliente' : 'Adicionar Cliente'}
               </h2>

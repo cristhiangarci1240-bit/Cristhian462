@@ -79,7 +79,7 @@ export function UsuariosClient({ initialUsers }: UsuariosClientProps) {
 
   return (
     <div style={{ maxWidth: '900px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: 800 }}>Gestão de Acessos & Usuários</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>
@@ -201,7 +201,7 @@ export function UsuariosClient({ initialUsers }: UsuariosClientProps) {
               boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ fontSize: '20px', fontWeight: 700 }}>Cadastrar Novo Administrador</h2>
               <button
                 onClick={() => setModalNewOpen(false)}
@@ -306,7 +306,7 @@ export function UsuariosClient({ initialUsers }: UsuariosClientProps) {
               boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Alterar Senha de Acesso</h2>
               <button
                 onClick={() => setModalPasswordOpen(false)}

@@ -24,7 +24,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F7F8FA' }}>
+    <div className="admin-shell" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F7F8FA' }}>
       <React.Suspense fallback={<aside className="admin-sidebar-placeholder" />}>
         <AdminSidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
       </React.Suspense>

@@ -405,3 +405,29 @@ img {
     text-align: center;
   }
 }
+
+/* Admin pages use the light theme for the whole page, including iOS overscroll areas */
+html:has(.admin-shell),
+body:has(.admin-shell) {
+  background-color: #F7F8FA;
+}
+
+.admin-shell {
+  overflow-x: clip;
+}
+
+@media (max-width: 900px) {
+  /* iOS Safari zooms into inputs with font-size < 16px and stays zoomed; 16px prevents it */
+  input,
+  select,
+  textarea,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 16px;
+  }
+
+  .admin-main h1 {
+    font-size: 22px !important;
+  }
+}
