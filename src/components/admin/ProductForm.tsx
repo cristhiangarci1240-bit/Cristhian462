@@ -366,7 +366,7 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
       )}
 
       {/* Grid Principal do Formulário */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '28px' }}>
+      <div className="grid-main-side-mobile" style={{ gap: '28px' }}>
         {/* Coluna Esquerda: Informações e Specs */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Dados Gerais */}
@@ -395,7 +395,7 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="grid-2-mobile" style={{ gap: '16px' }}>
               <div className="form-group">
                 <label className="form-label">SKU (Código Corporativo) *</label>
                 <input
@@ -427,7 +427,7 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+            <div className="grid-3-mobile" style={{ gap: '16px' }}>
               <div className="form-group">
                 <label className="form-label">Marca</label>
                 <input
@@ -540,7 +540,7 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
             </div>
 
             {/* Preços Básicos */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+            <div className="grid-3-mobile" style={{ gap: '16px', marginBottom: '20px' }}>
               <div className="form-group">
                 <label className="form-label">Preço de custo ({currency})</label>
                 <input
@@ -594,7 +594,7 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(130px, 100%), 1fr))',
                 gap: '12px',
                 marginBottom: '20px',
               }}
@@ -666,7 +666,7 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
                 gap: '12px',
                 backgroundColor: 'var(--brand-surface)',
                 border: '1px solid var(--brand-border)',
@@ -903,7 +903,7 @@ export function ProductForm({ categories, initialProduct }: ProductFormProps) {
               {specsList.map((spec, idx) => (
                 <div
                   key={idx}
-                  style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: '8px' }}
+                  style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 2fr) auto', gap: '8px' }}
                 >
                   <input
                     type="text"

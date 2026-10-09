@@ -165,7 +165,7 @@ export function CategoriasClient({ initialCategories }: CategoriasClientProps) {
       </div>
 
       {/* Grid de Categorias */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))', gap: '24px' }}>
         {categories.map((cat) => (
           <div
             key={cat.id}
@@ -340,7 +340,7 @@ export function CategoriasClient({ initialCategories }: CategoriasClientProps) {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+              <div className="grid-2-mobile" style={{ gap: '16px', marginBottom: '24px' }}>
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Ordem de exibição</label>
                   <input

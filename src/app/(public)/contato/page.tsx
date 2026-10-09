@@ -57,7 +57,7 @@ export default function ContatoPage() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '48px' }}>
+        <div className="grid-split-mobile" style={{ gap: '48px' }}>
           {/* Formulário Corporativo */}
           <div
             style={{
@@ -99,7 +99,7 @@ export default function ContatoPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="grid-2-mobile" style={{ gap: '16px' }}>
                   <div className="form-group">
                     <label className="form-label">Nome Completo</label>
                     <input
@@ -125,7 +125,7 @@ export default function ContatoPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="grid-2-mobile" style={{ gap: '16px' }}>
                   <div className="form-group">
                     <label className="form-label">E-mail Corporativo</label>
                     <input

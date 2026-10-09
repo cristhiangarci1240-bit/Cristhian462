@@ -1010,7 +1010,7 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
                     <span className={styles.settingLabel}>E-mail Oficial:</span>
                     <span className={styles.formInputReadonly}>{mailUser}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                     <div className={styles.settingRow}>
                       <span className={styles.settingLabel}>Servidor IMAP:</span>
                       <span className={styles.formInputReadonly}>{accountInfo?.imapHost || 'imap.hostinger.com'} (Porta 993 SSL)</span>
@@ -1130,7 +1130,7 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                     <div className={styles.settingRow}>
                       <span className={styles.settingLabel}>Largura Máxima da Imagem (px):</span>
                       <input
@@ -1272,7 +1272,7 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
                     )}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                     <div className={styles.settingRow}>
                       <span className={styles.settingLabel}>Intervalo de Verificação (minutos):</span>
                       <input
@@ -1390,7 +1390,7 @@ export function EmailClient({ initialClients, mailUser }: EmailClientProps) {
                   </div>
                 </div>
                 <div className={styles.formGrid}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                     <div className={styles.settingRow}>
                       <span className={styles.settingLabel}>Tamanho Máximo por Arquivo:</span>
                       <span className={styles.formInputReadonly}>10 MB</span>

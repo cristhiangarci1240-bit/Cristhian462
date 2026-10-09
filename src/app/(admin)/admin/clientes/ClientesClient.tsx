@@ -163,7 +163,7 @@ export function ClientesClient({ initialClients }: ClientesClientProps) {
       </div>
 
       {/* Grid de Clientes */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '20px' }}>
         {clients.map((cli) => (
           <div
             key={cli.id}
@@ -350,7 +350,7 @@ export function ClientesClient({ initialClients }: ClientesClientProps) {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+              <div className="grid-2-mobile" style={{ gap: '16px', marginBottom: '24px' }}>
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Ordem de exibição</label>
                   <input

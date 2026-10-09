@@ -23,11 +23,17 @@ import {
   Trash2,
   Megaphone,
   Receipt,
+  X,
 } from 'lucide-react';
 import { useBrand } from '@/components/BrandProvider';
 import styles from './AdminSidebar.module.css';
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export function AdminSidebar({ open = false, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentFolder = searchParams.get('folder') || 'inbox';
@@ -67,7 +73,9 @@ export function AdminSidebar() {
   const isFiscalActive = pathname.startsWith('/admin/fiscal');
 
   return (
-    <aside className={styles.sidebar}>
+    <>
+    {open && <div className={styles.overlay} onClick={onClose} aria-hidden="true" />}
+    <aside className={`${styles.sidebar} ${open ? styles.sidebarOpen : ''}`}>
       <div className={styles.logoArea}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -75,9 +83,12 @@ export function AdminSidebar() {
           alt="TECH7 Electronics"
           className={styles.logoImg}
         />
+        <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Fechar menu">
+          <X size={20} />
+        </button>
       </div>
 
-      <nav className={styles.nav}>
+      <nav className={styles.nav} onClick={onClose}>
         {menuItems.map((item, idx) => {
           const isActive =
             item.href === '/admin'
@@ -139,5 +150,6 @@ export function AdminSidebar() {
         </Link>
       </div>
     </aside>
+    </>
   );
 }

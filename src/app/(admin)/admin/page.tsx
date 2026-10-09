@@ -77,7 +77,7 @@ export default async function AdminDashboardPage() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))',
           gap: '20px',
           marginBottom: '36px',
         }}
@@ -116,7 +116,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Seção Gráfica e Analítica Útil */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '28px', marginBottom: '36px' }}>
+      <div className="grid-split-mobile" style={{ gap: '28px', marginBottom: '36px' }}>
         {/* Distribuição por Categoria */}
         <div
           style={{

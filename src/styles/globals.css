@@ -311,3 +311,97 @@ img {
   border: 1px solid #E2E8F0;
   border-radius: var(--radius-sm);
 }
+
+/* Responsive grid helpers: two columns on desktop, one column on phones */
+.grid-2-mobile,
+.grid-split-mobile {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.grid-split-mobile {
+  grid-template-columns: 1.2fr 1fr;
+}
+
+@media (max-width: 768px) {
+  .grid-2-mobile,
+  .grid-split-mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Admin shell */
+.admin-main {
+  flex: 1;
+  padding: 32px 36px;
+  overflow-y: auto;
+}
+
+.admin-sidebar-placeholder {
+  width: 252px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .admin-main {
+    padding: 20px 16px;
+  }
+
+  .admin-sidebar-placeholder {
+    display: none;
+  }
+}
+
+.grid-main-side-mobile {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+.grid-3-mobile {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Grid children with inputs must be allowed to shrink below their content width */
+.grid-2-mobile > *,
+.grid-split-mobile > *,
+.grid-main-side-mobile > *,
+.grid-3-mobile > * {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .grid-main-side-mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid-3-mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Wide admin tables scroll sideways on phones instead of breaking the layout */
+@media (max-width: 900px) {
+  .admin-main table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-main th,
+  .admin-main td {
+    white-space: nowrap;
+  }
+}
+
+/* Long button labels wrap on phones instead of overflowing the screen */
+@media (max-width: 600px) {
+  .btn {
+    white-space: normal;
+    max-width: 100%;
+    text-align: center;
+  }
+}

@@ -85,7 +85,7 @@ export function WhatsAppAdminClient({ initialSettings, inquiries }: WhatsAppAdmi
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px', marginBottom: '40px' }}>
+      <div className="grid-split-mobile" style={{ gap: '32px', marginBottom: '40px' }}>
         {/* Formulário de Configuração */}
         <form
           onSubmit={handleSave}

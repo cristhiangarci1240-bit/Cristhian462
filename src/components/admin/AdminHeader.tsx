@@ -2,10 +2,14 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { LogOut, Building2 } from 'lucide-react';
+import { LogOut, Building2, Menu } from 'lucide-react';
 import styles from './AdminHeader.module.css';
 
-export function AdminHeader() {
+interface AdminHeaderProps {
+  onMenuClick?: () => void;
+}
+
+export function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const router = useRouter();
 
   // ── Logout logic unchanged ──
@@ -21,6 +25,11 @@ export function AdminHeader() {
 
   return (
     <header className={styles.header}>
+      {/* Mobile: open sidebar drawer */}
+      <button type="button" className={styles.menuBtn} onClick={onMenuClick} aria-label="Abrir menu">
+        <Menu size={22} />
+      </button>
+
       {/* Left: brand context */}
       <div className={styles.breadcrumb}>
         <Building2 size={13} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle', color: 'var(--brand-primary)' }} />
@@ -47,7 +56,7 @@ export function AdminHeader() {
           id="btn-admin-logout"
         >
           <LogOut size={13} />
-          <span>Sair</span>
+          <span className={styles.logoutLabel}>Sair</span>
         </button>
       </div>
     </header>

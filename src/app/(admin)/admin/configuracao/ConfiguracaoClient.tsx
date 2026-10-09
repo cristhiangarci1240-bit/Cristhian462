@@ -373,7 +373,7 @@ export function ConfiguracaoClient({ initialSettings }: ConfiguracaoClientProps)
             </h3>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="grid-2-mobile" style={{ gap: '16px' }}>
             <div className="form-group">
               <label className="form-label">E-mail Institucional B2B</label>
               <input
@@ -467,7 +467,7 @@ export function ConfiguracaoClient({ initialSettings }: ConfiguracaoClientProps)
             Logos exibidos na página inicial, abaixo de &ldquo;O que nossos clientes dizem&rdquo;.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="grid-2-mobile" style={{ gap: '16px' }}>
             <div className="form-group">
               <label className="form-label">Título</label>
               <input

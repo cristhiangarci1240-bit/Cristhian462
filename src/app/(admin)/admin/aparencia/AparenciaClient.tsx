@@ -134,7 +134,7 @@ export function AparenciaClient({ initialSettings }: AparenciaClientProps) {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+      <div className="grid-split-mobile" style={{ gap: '32px' }}>
         {/* Coluna 1: Logos e Favicon */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Logo Principal */}
@@ -260,7 +260,7 @@ export function AparenciaClient({ initialSettings }: AparenciaClientProps) {
               Ajuste o tom exato do verde tecnológico e do fundo corporativo.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="grid-2-mobile" style={{ gap: '16px' }}>
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label className="form-label">Cor Primária (Verde Tecnológico)</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

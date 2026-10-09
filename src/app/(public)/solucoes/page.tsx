@@ -84,7 +84,7 @@ export default function SolucoesPage() {
         </div>
 
         {/* Grade de Soluções */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(480px, 100%), 1fr))', gap: '32px' }}>
           {solutions.map((item, idx) => (
             <div
               key={idx}
@@ -92,7 +92,7 @@ export default function SolucoesPage() {
                 backgroundColor: 'var(--brand-surface-card)',
                 border: '1px solid var(--brand-border)',
                 borderRadius: 'var(--radius-md)',
-                padding: '40px',
+                padding: 'clamp(20px, 5vw, 40px)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '20px',

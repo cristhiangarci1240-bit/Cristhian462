@@ -82,7 +82,7 @@ export default async function HomePage() {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))',
             gap: '1px',
             backgroundColor: '#E2E8F0',
             border: '1px solid #E2E8F0',

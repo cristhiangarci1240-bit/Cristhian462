@@ -32,7 +32,7 @@ export default function EmpresaPage() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))',
             gap: '40px',
             marginBottom: '72px',
           }}
@@ -95,7 +95,7 @@ export default function EmpresaPage() {
             backgroundColor: 'var(--brand-surface)',
             border: '1px solid var(--brand-border-tech)',
             borderRadius: 'var(--radius-md)',
-            padding: '48px',
+            padding: 'clamp(20px, 6vw, 48px)',
             textAlign: 'center',
           }}
         >

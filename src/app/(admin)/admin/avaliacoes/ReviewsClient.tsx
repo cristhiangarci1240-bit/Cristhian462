@@ -674,7 +674,7 @@ export function ReviewsClient({ initialReviews }: ReviewsClientProps) {
                 </div>
 
                 {/* Data e Ordem */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="grid-2-mobile" style={{ gap: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1E293B', marginBottom: '6px' }}>
                       Data de Referência
